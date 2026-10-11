@@ -9,6 +9,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 script = ExtResource("1_card_swiper")
 
 [node name="PCControls" type="Control" parent="."]
@@ -18,6 +19,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 
 [node name="BtnLeft" type="Button" parent="PCControls"]
 layout_mode = 1
@@ -77,6 +79,7 @@ offset_top = 38.0
 offset_right = 80.0
 offset_bottom = 58.0
 grow_horizontal = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.75, 0.8, 0.88, 1)
 theme_override_font_sizes/font_size = 11
 text = "Card 1 of 3"
@@ -96,17 +99,21 @@ offset_right = 140.0
 offset_bottom = 210.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 1
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CardPanel"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 8
 
 [node name="HeaderSpacer" type="Control" parent="CardPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
+mouse_filter = 2
 
 [node name="TitleLabel" type="Label" parent="CardPanel/VBoxContainer"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_font_sizes/font_size = 16
 text = "Block Title"
 horizontal_alignment = 1
@@ -114,6 +121,7 @@ autowrap_mode = 2
 
 [node name="SubtitleLabel" type="Label" parent="CardPanel/VBoxContainer"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.7, 0.8, 0.9, 1)
 theme_override_font_sizes/font_size = 11
 text = "Location / Subtitle"
@@ -121,10 +129,12 @@ horizontal_alignment = 1
 
 [node name="HSeparator" type="HSeparator" parent="CardPanel/VBoxContainer"]
 layout_mode = 2
+mouse_filter = 2
 
 [node name="DescLabel" type="Label" parent="CardPanel/VBoxContainer"]
 layout_mode = 2
 size_flags_vertical = 3
+mouse_filter = 2
 theme_override_colors/font_color = Color(0.88, 0.9, 0.94, 1)
 theme_override_font_sizes/font_size = 13
 text = "Story context description or decision background..."
@@ -135,10 +145,12 @@ autowrap_mode = 2
 [node name="ActionsContainer" type="VBoxContainer" parent="CardPanel/VBoxContainer"]
 visible = false
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 3
 
 [node name="ActionsHeader" type="Label" parent="CardPanel/VBoxContainer/ActionsContainer"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 11
 text = "AVAILABLE DECISION ACTIONS:"
@@ -146,14 +158,17 @@ horizontal_alignment = 1
 
 [node name="ActionsList" type="VBoxContainer" parent="CardPanel/VBoxContainer/ActionsContainer"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_constants/separation = 2
 
 [node name="FooterSpacer" type="Control" parent="CardPanel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
+mouse_filter = 2
 
 [node name="ChoiceOverlay" type="Label" parent="CardPanel"]
 layout_mode = 2
+mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.9, 0.2, 1)
 theme_override_font_sizes/font_size = 18
 horizontal_alignment = 1
