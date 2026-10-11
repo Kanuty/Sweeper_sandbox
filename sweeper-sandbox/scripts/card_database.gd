@@ -116,6 +116,7 @@ var shop_items = [
 # "shelter": Waking up from hibernation, shelter maintenance, vault exit.
 # "wilderness": Generic wasteland events (rad storms, mutants, ruins). Can repeat.
 # "encounter": Special non-generic encounters (Trader convoy, Outpost, Ruined Village, Underground Lab).
+# Focused deltas: Decisions affect 1-2 indicators primarily!
 var decision_blocks = [
 	# ---------------- SHELTER BLOCKS ----------------
 	{
@@ -128,32 +129,32 @@ var decision_blocks = [
 			{
 				"title": "SLUMBER TERMINATED: Vault Cryo-Pod 09",
 				"location": "Sub-Level 4 - Cryo Vault",
-				"description": "Frost hisses away as your pod unseals. Emergency lights blink red. You have been in cryo-slumber for decades. The automated shelter AI glimmers."
+				"description": "Frost hisses away as your pod unseals. Emergency lights blink red. You have been in cryo-slumber for decades. Your body feels stiff and exhausted."
 			},
 			{
 				"title": "DIAGNOSTIC WARNING: Life Support Failure",
 				"location": "Shelter Control Hub",
-				"description": "Power cells are failing, filters are choked with ancient dust, and the vault seal is locked from the outside."
+				"description": "Power cells are failing and vault air filters are choked with ancient dust."
 			}
 		],
 		"decision_card": {
 			"title": "DECISION: Primary Shelter Restoration",
-			"description": "How will you allocate remaining emergency reserves before exiting?",
+			"description": "How will you handle your waking exhaustion?",
 			"choices": {
 				"left": {
-					"label": "Reroute Emergency Power to Life Support",
-					"deltas": [15, 0, -10, 10, -5],
-					"affected": [0, 2, 3, 4]
+					"label": "Sleep Extra Hour in Cryo-Bay (Rest)",
+					"deltas": [20, 0, 0, 0, 0],
+					"affected": [0]
 				},
 				"right": {
-					"label": "Overclock Tools to Force Main Vault Doors",
-					"deltas": [-10, 0, 20, -5, 10],
-					"affected": [0, 2, 3, 4]
+					"label": "Force Main Vault Doors Open (Exertion)",
+					"deltas": [-15, 0, 15, 0, 0],
+					"affected": [0, 2]
 				},
 				"up": {
 					"label": "Purge Rad-Air Filters First",
-					"deltas": [-5, 0, -5, 15, -20],
-					"affected": [0, 2, 3, 4]
+					"deltas": [0, 0, 0, 0, -20],
+					"affected": [4]
 				}
 			}
 		}
@@ -168,27 +169,27 @@ var decision_blocks = [
 			{
 				"title": "THE VAULT DOOR STEP: Leaving the Shelter",
 				"location": "Shelter Airlock Gate",
-				"description": "The heavy steel door creaks open with a deafening screech. Unfamiliar sunlight blinds your eyes. A dry, radioactive wind sweeps across scorched ruins."
+				"description": "The heavy steel door creaks open. Unfamiliar sunlight blinds your eyes. A dry, radioactive wind sweeps across scorched ruins."
 			}
 		],
 		"decision_card": {
 			"title": "DECISION: First Footsteps into the Wasteland",
-			"description": "What will you take with you as you leave the shelter behind?",
+			"description": "What will you prioritize as you step out?",
 			"choices": {
 				"left": {
-					"label": "Salvage Extra Scrap & Gear",
-					"deltas": [-10, 0, 25, -10, 5],
-					"affected": [0, 2, 3, 4]
+					"label": "Salvage Heavy Gear (Heavy Load)",
+					"deltas": [-15, 0, 20, 0, 0],
+					"affected": [0, 2]
 				},
 				"right": {
-					"label": "Broadcast Friendly Signal to Near Frequencies",
-					"deltas": [-5, 20, 0, 5, 0],
-					"affected": [0, 1, 3]
+					"label": "Eat Vault Emergency Rations",
+					"deltas": [10, 15, 0, 0, 0],
+					"affected": [0, 1]
 				},
 				"up": {
-					"label": "Don Heavy Rad-Protection Gear",
-					"deltas": [-15, 0, 10, 5, -25],
-					"affected": [0, 2, 3, 4]
+					"label": "Pace Yourself Carefully",
+					"deltas": [15, 0, 0, 10, 0],
+					"affected": [0, 3]
 				}
 			}
 		}
@@ -210,22 +211,22 @@ var decision_blocks = [
 		],
 		"decision_card": {
 			"title": "DECISION: Toxic Storm Shelter",
-			"description": "How do you survive the radioactive fallout?",
+			"description": "How do you handle the radioactive fallout storm?",
 			"choices": {
 				"left": {
-					"label": "Hunker Down under Reinforced Tarp",
-					"deltas": [-15, 0, -5, -5, 10],
-					"affected": [0, 2, 3, 4]
+					"label": "Hunker Down and Sleep through Storm",
+					"deltas": [15, -10, 0, 0, 0],
+					"affected": [0, 1]
 				},
 				"right": {
-					"label": "Sprint to Cave Ruin",
-					"deltas": [-20, 0, 10, 5, -10],
-					"affected": [0, 2, 3, 4]
+					"label": "Sprint across Flats to Cave",
+					"deltas": [-20, 0, 0, 0, 15],
+					"affected": [0, 4]
 				},
 				"up": {
 					"label": "Use Decontamination Scrubbers",
-					"deltas": [-5, 0, -15, 10, -25],
-					"affected": [0, 2, 3, 4]
+					"deltas": [0, 0, -10, 0, -25],
+					"affected": [2, 4]
 				}
 			}
 		}
@@ -240,27 +241,27 @@ var decision_blocks = [
 			{
 				"title": "WASTELAND EVENT: Ruined Supermarket Salvage",
 				"location": "Overgrown Suburbs",
-				"description": "A collapsed department store looms in the weeds. Broken glass and rusted shelves hold forgotten canned goods and electronics."
+				"description": "A collapsed department store looms in the weeds. Broken glass and rusted shelves hold forgotten canned goods."
 			}
 		],
 		"decision_card": {
 			"title": "DECISION: Scavenging Strategy",
-			"description": "Where will you focus your search inside the collapse?",
+			"description": "Where will you focus your energy inside the collapse?",
 			"choices": {
 				"left": {
-					"label": "Search Basements for Batteries & Tools",
-					"deltas": [-10, 0, 20, 5, 15],
-					"affected": [0, 2, 3, 4]
+					"label": "Search Basements for Spare Parts",
+					"deltas": [-10, 0, 20, 0, 0],
+					"affected": [0, 2]
 				},
 				"right": {
 					"label": "Ransack Food Aisle for Rations",
-					"deltas": [20, 0, -5, 10, 0],
-					"affected": [0, 2, 3]
+					"deltas": [0, 25, 0, 0, 0],
+					"affected": [1]
 				},
 				"up": {
-					"label": "Share Findings with Passing Wanders",
-					"deltas": [-5, 25, -10, 10, 0],
-					"affected": [0, 1, 2, 3]
+					"label": "Rest on Supermarket Couch",
+					"deltas": [20, -5, 0, 10, 0],
+					"affected": [0, 1, 3]
 				}
 			}
 		}
@@ -283,19 +284,19 @@ var decision_blocks = [
 			"description": "How will you handle the ravenous beast pack?",
 			"choices": {
 				"left": {
-					"label": "Fire Stun Flares & Flee",
-					"deltas": [-15, 0, -5, 10, 0],
-					"affected": [0, 2, 3]
+					"label": "Adrenaline Sprint Away (Energy Strain)",
+					"deltas": [-25, 0, 0, 0, 0],
+					"affected": [0]
 				},
 				"right": {
 					"label": "Stand & Fight with Scrap Rifle",
-					"deltas": [-10, 0, -15, -10, 10],
-					"affected": [0, 2, 3, 4]
+					"deltas": [0, 0, -15, 10, 0],
+					"affected": [2, 3]
 				},
 				"up": {
-					"label": "Toss Rations to Distract Them",
-					"deltas": [-20, 10, 0, 10, 0],
-					"affected": [0, 1, 3]
+					"label": "Toss Canned Rations to Distract",
+					"deltas": [0, -20, 0, 10, 0],
+					"affected": [1, 3]
 				}
 			}
 		}
@@ -313,31 +314,26 @@ var decision_blocks = [
 				"title": "SPECIAL ENCOUNTER: Scrap Town Outpost",
 				"location": "Sector 7 Outpost - Rust Citadel",
 				"description": "A fortified settlement made of shipping containers rises above the dust. Guard turrets track your every move."
-			},
-			{
-				"title": "MEETING THE CHIEF",
-				"location": "Rust Citadel Council Hall",
-				"description": "The town chief demands tribute or service in exchange for safe passage and trading rights."
 			}
 		],
 		"decision_card": {
 			"title": "DECISION: Outpost Negotiations",
-			"description": "How do you align with the Rust Citadel survivors?",
+			"description": "How do you deal with the Rust Citadel outpost?",
 			"choices": {
 				"left": {
-					"label": "Pay Tool & Energy Tribute",
-					"deltas": [-15, 20, -15, 10, 0],
-					"affected": [0, 1, 2, 3]
+					"label": "Trade Tool Gear for Hot Meal",
+					"deltas": [10, 20, -15, 0, 0],
+					"affected": [0, 1, 2]
 				},
 				"right": {
-					"label": "Offer Technical Repair Services",
-					"deltas": [-20, 25, 10, 5, -5],
-					"affected": [0, 1, 2, 3, 4]
+					"label": "Work Heavy Repairs Shift",
+					"deltas": [-20, 15, 15, 0, 0],
+					"affected": [0, 1, 2]
 				},
 				"up": {
-					"label": "Refuse Demands & Slip Away",
-					"deltas": [-10, -20, 0, -10, 15],
-					"affected": [0, 1, 3, 4]
+					"label": "Bribe Guards with Rations to Rest in Bed",
+					"deltas": [25, -15, 0, 10, 0],
+					"affected": [0, 1, 3]
 				}
 			}
 		}
@@ -352,7 +348,7 @@ var decision_blocks = [
 			{
 				"title": "SPECIAL ENCOUNTER: Nomad Caravan",
 				"location": "Old Highway 101",
-				"description": "Armored dune buggies towing supply trailers pull up along the highway. A heavily armed trader offers a bartering opportunity."
+				"description": "Armored dune buggies towing supply trailers pull up along the highway. A heavily armed trader offers bartering."
 			}
 		],
 		"decision_card": {
@@ -360,19 +356,19 @@ var decision_blocks = [
 			"description": "Choose your bartering deal with the Nomads.",
 			"choices": {
 				"left": {
-					"label": "Trade Spare Gear for Anti-Rad Drugs",
-					"deltas": [0, 10, -20, 5, -30],
-					"affected": [1, 2, 3, 4]
+					"label": "Trade Spare Gear for Anti-Rad Meds",
+					"deltas": [0, 0, -20, 0, -30],
+					"affected": [2, 4]
 				},
 				"right": {
-					"label": "Buy High-Capacity Battery Cells",
-					"deltas": [30, 10, -15, 0, 0],
-					"affected": [0, 1, 2]
+					"label": "Buy High-Capacity Energy Drinks",
+					"deltas": [30, -10, 0, 0, 0],
+					"affected": [0, 1]
 				},
 				"up": {
-					"label": "Share Wasteland Maps & Recon",
-					"deltas": [0, 30, -5, 15, 0],
-					"affected": [1, 2, 3]
+					"label": "Trade Rations for Stimulant Shots",
+					"deltas": [25, -20, 0, 0, 0],
+					"affected": [0, 1]
 				}
 			}
 		}
@@ -387,12 +383,7 @@ var decision_blocks = [
 			{
 				"title": "SPECIAL ENCOUNTER: Subterranean Pre-War Lab",
 				"location": "Bio-Tech Complex Bravo",
-				"description": "An abandoned pre-war underground facility lies hidden beneath a crater. Automated security turrets hum faintly."
-			},
-			{
-				"title": "HIGH HAZARD WARNING",
-				"location": "Reactor Core Level",
-				"description": "Deep inside, a leaking containment unit glows violet. High radiation, but pristine technological artifacts lie within."
+				"description": "An abandoned pre-war underground facility lies hidden beneath a crater. Leaking containment glowing violet."
 			}
 		],
 		"decision_card": {
@@ -400,19 +391,19 @@ var decision_blocks = [
 			"description": "How deep into the reactor zone will you venture?",
 			"choices": {
 				"left": {
-					"label": "Full Core Raid for Advanced Tech",
-					"deltas": [-20, 0, 35, -15, 35],
-					"affected": [0, 2, 3, 4]
+					"label": "Exertion Core Raid for Advanced Gear",
+					"deltas": [-25, 0, 35, 0, 35],
+					"affected": [0, 2, 4]
 				},
 				"right": {
 					"label": "Cautious Perimeter Salvage",
-					"deltas": [-10, 0, 15, 5, 10],
-					"affected": [0, 2, 3, 4]
+					"deltas": [-10, 0, 15, 0, 10],
+					"affected": [0, 2, 4]
 				},
 				"up": {
-					"label": "Seal Core & Purge Radiation Spike",
-					"deltas": [-15, 15, -10, 10, -30],
-					"affected": [0, 1, 2, 3, 4]
+					"label": "Flush Core Rad-Scrubbers",
+					"deltas": [0, 0, -10, 0, -35],
+					"affected": [2, 4]
 				}
 			}
 		}

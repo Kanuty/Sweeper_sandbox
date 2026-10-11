@@ -29,6 +29,160 @@ var current_block = {}
 var is_in_doom_history = false
 var pending_game_over_result = {}
 
+# Pools of 2-3 slide bad end epilogues for all failure conditions
+const BAD_END_EPILOGUES = {
+	"energy_0": [ # Total Exhaustion
+		[
+			{
+				"title": "EPILOGUE I: Total Exhaustion",
+				"location": "The Unforgiving Trail",
+				"description": "Your body has been running on its last reserves for far too long. Your muscles finally refuse to cooperate, your legs give way, and you collapse into the ash."
+			},
+			{
+				"title": "EPILOGUE II: Silent Slumber",
+				"location": "Scorched Wilderness",
+				"description": "The cold wind sweeps across your prone body. Heavy eyelids fall shut as consciousness slips away. This time, you don't have enough energy to wake up."
+			}
+		],
+		[
+			{
+				"title": "EPILOGUE I: Muscle Collapse",
+				"location": "Ruin Outer Perimeter",
+				"description": "Tremors shake your limbs as adrenaline completely vanishes. Every breath becomes an unbearable ordeal."
+			},
+			{
+				"title": "EPILOGUE II: Fading Pulse",
+				"location": "Dust Basin",
+				"description": "Your strength ebbs away completely. You close your eyes for a quick rest, but the wasteland claims you in eternal slumber."
+			}
+		]
+	],
+	"energy_100": [ # Cardiac Overload
+		[
+			{
+				"title": "EPILOGUE I: Cardiac Overload",
+				"location": "High-Stress Zone",
+				"description": "Too much stimulation, too much adrenaline, and nowhere for all that energy to go. Your pulse hammers inside your skull like a war drum."
+			},
+			{
+				"title": "EPILOGUE II: Sudden Halt",
+				"location": "Ashen Plateau",
+				"description": "Your heart starts racing uncontrollably, fluttering violently against your ribs. A moment later, it stops altogether."
+			}
+		]
+	],
+	"food_0": [ # Starvation
+		[
+			{
+				"title": "EPILOGUE I: Starvation",
+				"location": "Barren Scraplands",
+				"description": "You've pushed your hunger aside one too many times. Your body has consumed its last reserves, and your organs begin shutting down."
+			},
+			{
+				"title": "EPILOGUE II: Final Silence",
+				"location": "The Scorched Trail",
+				"description": "Your stomach finally stops complaining. So does everything else. You collapse silently into the dry soil."
+			}
+		]
+	],
+	"food_100": [ # Digestive Catastrophe
+		[
+			{
+				"title": "EPILOGUE I: Digestive Catastrophe",
+				"location": "Salvage Camp Shelter",
+				"description": "Your digestive system wasn't prepared for this much food in such a short time. Your stomach swells in agony as fever grips your limbs."
+			},
+			{
+				"title": "EPILOGUE II: Fatal Rupture",
+				"location": "Camp Interior",
+				"description": "The pain becomes unbearable, and something inside you ruptures. Apparently, there is such a thing as too much dinner."
+			}
+		]
+	],
+	"equipment_0": [ # Improvisation Failed
+		[
+			{
+				"title": "EPILOGUE I: Improvisation Failed",
+				"location": "Ruined Outpost Gate",
+				"description": "You've been improvising without proper tools for too long. Your makeshift survival gear crumbles into useless fragments."
+			},
+			{
+				"title": "EPILOGUE II: Bare Hands Failure",
+				"location": "Outer Perimeter",
+				"description": "One final attempt to fix something with your bare hands goes terribly wrong. Turns out some jobs really do require equipment."
+			}
+		]
+	],
+	"equipment_100": [ # Crushed by Possessions
+		[
+			{
+				"title": "EPILOGUE I: Crushed by Possessions",
+				"location": "Narrow Mountain Pass",
+				"description": "You've been carrying far more than your body can handle. Your knees buckle under the towering weight of salvaged metal."
+			},
+			{
+				"title": "EPILOGUE II: Trapped Load",
+				"location": "Ravine Floor",
+				"description": "Your overloaded backpack drags you down, landing you in a position you can't escape from. All those useful tools, and not one can help you now."
+			}
+		]
+	],
+	"sanity_0": [ # Complete Breakdown
+		[
+			{
+				"title": "EPILOGUE I: Complete Breakdown",
+				"location": "Echoing Ruins",
+				"description": "Too many horrors, too little rest, and far too many voices in your head. You can no longer distinguish reality from hallucination."
+			},
+			{
+				"title": "EPILOGUE II: Lost Instincts",
+				"location": "The Foggy Chasm",
+				"description": "Your survival instincts disappear along with your last coherent thought. You step into the abyss, smiling at shadows."
+			}
+		]
+	],
+	"sanity_100": [ # Analysis Paralysis
+		[
+			{
+				"title": "EPILOGUE I: Analysis Paralysis",
+				"location": "Crossroads of Ashes",
+				"description": "You've become obsessed with making the perfect decision. Every movement requires calculation, every risk demands another assessment."
+			},
+			{
+				"title": "EPILOGUE II: Endless Deliberation",
+				"location": "Frozen Trail",
+				"description": "Eventually, you stop acting altogether, locked in an infinite loop of logic. Your body doesn't survive the endless deliberation."
+			}
+		]
+	],
+	"radiation_100": [ # Acute Radiation Sickness / Cellular Collapse
+		[
+			{
+				"title": "EPILOGUE I: Acute Radiation Sickness",
+				"location": "Radioactive Crater",
+				"description": "You've absorbed far more radiation than any human body can withstand. Severe nausea turns into violent vomiting as skin begins to blister."
+			},
+			{
+				"title": "EPILOGUE II: Organ Failure",
+				"location": "Glow Horizon",
+				"description": "Your organs progressively fail under intense irradiation. Your body has reached its absolute limit."
+			}
+		],
+		[
+			{
+				"title": "EPILOGUE I: Cellular Collapse",
+				"location": "Hot Zone Perimeter",
+				"description": "Radiation has damaged your cells faster than your body can repair them. Internal bleeding begins as your bone marrow fails."
+			},
+			{
+				"title": "EPILOGUE II: Immune Collapse",
+				"location": "Scorched Ridge",
+				"description": "Your immune system collapses entirely. You survived the apocalypse, but not what it left behind."
+			}
+		]
+	]
+}
+
 func _ready():
 	menu_btn.pressed.connect(_on_menu_pressed)
 	shop_btn.pressed.connect(_on_shop_pressed)
@@ -108,7 +262,7 @@ func _on_decision_committed(_direction: String, choice_data: Dictionary):
 	top_panel.clear_highlights()
 
 	if is_in_doom_history:
-		# Player finished reading doom cards!
+		# Player finished reading multi-slide bad end epilogue cards!
 		is_in_doom_history = false
 		show_final_game_over_popup(pending_game_over_result)
 		return
@@ -171,76 +325,36 @@ func start_doom_history_sequence(result: Dictionary):
 
 	var idx = result.get("failed_index", 0)
 	var is_max = result.get("is_max", false)
-	var ind_info = CardDatabase.INDICATORS.get(idx, {"name": "Resource"})
-	var ind_name = ind_info.get("name", "Resource")
 
-	var doom_card_1 = {}
-	var doom_card_2 = {}
-
+	var pool_key = "energy_0"
 	if idx == 0:
-		doom_card_1 = {
-			"title": "SYSTEM COLLAPSE: Power Grid Blackout",
-			"location": "Hibernatus Core Systems",
-			"description": "Sparks erupt from worn power cells. Indicators flicker off one by one as dark, freezing silence envelopes your shelter."
-		}
-		doom_card_2 = {
-			"title": "DOOM CHRONICLE: Frozen Slumber",
-			"location": "Sub-Zero Ruins",
-			"description": "Without energy, heat regulators fail completely. Cold frost encases your body as your journey ends in silence."
-		}
+		pool_key = "energy_100" if is_max else "energy_0"
 	elif idx == 1:
-		doom_card_1 = {
-			"title": "FATAL FAMINE: Empty Rations",
-			"location": "Wasteland Camp",
-			"description": "Your last nutrient paste tube lies empty on the dry earth. Starvation weakens your limbs until you can walk no further."
-		}
-		doom_card_2 = {
-			"title": "DOOM CHRONICLE: Starvation's Toll",
-			"location": "The Scorched Trail",
-			"description": "Passing scavengers find your journal resting in the dust. The story of your hibernation ends here."
-		}
+		pool_key = "food_100" if is_max else "food_0"
 	elif idx == 2:
-		doom_card_1 = {
-			"title": "EQUIPMENT MELTDOWN: Total Mechanical Failure",
-			"location": "Ruined Outpost Gate",
-			"description": "Screws sheer, gears grind into metal shavings, and your primary survival suit ruptures beyond repair."
-		}
-		doom_card_2 = {
-			"title": "DOOM CHRONICLE: Unprotected Fallout",
-			"location": "Shattered Perimeter",
-			"description": "Without working equipment, the harsh wasteland environment swallows you whole."
-		}
+		pool_key = "equipment_100" if is_max else "equipment_0"
 	elif idx == 3:
-		doom_card_1 = {
-			"title": "PSYCHIC BREAKDOWN: Hallucinations",
-			"location": "The Endless Ashes",
-			"description": "Whispers in the dust grow deafening. Reality shifts as mind collapse drives you into raving panic."
-		}
-		doom_card_2 = {
-			"title": "DOOM CHRONICLE: Lost in the Abyss",
-			"location": "Unknown Mirage",
-			"description": "Wandering blindly into toxic radiation fog, your mind succumbs to the dark nightmare."
-		}
+		pool_key = "sanity_100" if is_max else "sanity_0"
 	else:
-		doom_card_1 = {
-			"title": "LETHAL DOSE: Geiger Counter Spike",
-			"location": "Radioactive Crater Zone",
-			"description": "The Geiger counter screams continuously. Violet radiation beams pierce through your shielding."
-		}
-		doom_card_2 = {
-			"title": "DOOM CHRONICLE: Irradiated Dust",
-			"location": "Glow Horizon",
-			"description": "Acute radiation sickness overwhelms your organs. Your body collapses under the glowing sky."
-		}
+		pool_key = "radiation_100"
+
+	var available_epilogues = BAD_END_EPILOGUES.get(pool_key, BAD_END_EPILOGUES["energy_0"])
+	var chosen_epilogue = available_epilogues[randi() % available_epilogues.size()]
+
+	var story_cards = []
+	for i in range(chosen_epilogue.size() - 1):
+		story_cards.append(chosen_epilogue[i])
+
+	var last_card = chosen_epilogue[chosen_epilogue.size() - 1]
 
 	var doom_block = {
 		"id": "doom_block",
 		"time_cost_hours": 0,
 		"reward_points": 0,
-		"story_cards": [doom_card_1],
+		"story_cards": story_cards,
 		"decision_card": {
-			"title": "FINAL CHRONICLE: Accepting Fate",
-			"description": doom_card_2["description"],
+			"title": last_card["title"],
+			"description": last_card["description"],
 			"choices": {
 				"right": {
 					"label": "View Survival Legend",
