@@ -146,16 +146,20 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
 text = "[b]Goal:[/b]
-Stay alive as long as possible by making balanced decisions.
+Balance your realm and survive as many [b]Days and Hours[/b] as possible!
 
-[b]Indicators (Top Panel):[/b]
-• 4 resources start at default value [color=yellow]50[/color] (min 0, max 100).
-• [color=crimson]Game Over[/color] occurs if ANY indicator reaches [color=red]0[/color] or [color=red]100[/color]!
+[b]Decision Blocks & Context:[/b]
+• Each scenario starts with [b]1–2 Story Cards[/b] describing the situation, location, and background. Swipe left/right or click NEXT/PREV to read.
+• The final card of each block is the [b]Decision Card[/b].
 
-[b]Controls & Swiping:[/b]
-• Swipe cards [b]LEFT, RIGHT, UP, or DOWN[/b] (or use Keyboard Arrow Keys / On-screen Direction Buttons).
-• As you drag, glowing markers show WHICH top indicators will be affected by that direction.
-• You will see which indicators will change, but NOT how much or in which direction!"
+[b]Knowing Actions & Affected Indicators:[/b]
+• On the Decision Card, available actions (e.g., 'Pass Tax Reform') and their affected indicator icons are clearly listed [u]before[/u] you swipe.
+• Left/Right choices are always available. Up/Down choices appear when extra decisions exist!
+• As you drag, top glowing markers highlight affected indicators without revealing delta values or direction.
+
+[b]Time Tracking:[/b]
+• Each decision block advances time by [b]6 hours to 3 days (72h)[/b].
+• Score is tracked and displayed in Days and Hours."
 
 [node name="CloseBtn" type="Button" parent="HowToPlayModal/Panel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 45)
