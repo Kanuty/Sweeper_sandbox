@@ -3,7 +3,7 @@
 [ext_resource type="Script" path="res://scripts/top_panel.gd" id="1_top_panel"]
 
 [node name="TopPanel" type="Control"]
-custom_minimum_size = Vector2(0, 80)
+custom_minimum_size = Vector2(0, 110)
 layout_mode = 3
 anchors_preset = 10
 anchor_right = 1.0
@@ -42,7 +42,7 @@ size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Indicator0"]
 layout_mode = 2
-theme_override_constants/separation = 0
+theme_override_constants/separation = 1
 alignment = 1
 
 [node name="ShieldLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator0/VBoxContainer"]
@@ -82,7 +82,7 @@ show_percentage = false
 [node name="ValueLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator0/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
-text = "50"
+text = "MEDIUM"
 horizontal_alignment = 1
 
 [node name="Indicator1" type="PanelContainer" parent="MarginContainer/HBoxContainer"]
@@ -91,7 +91,7 @@ size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Indicator1"]
 layout_mode = 2
-theme_override_constants/separation = 0
+theme_override_constants/separation = 1
 alignment = 1
 
 [node name="ShieldLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
@@ -113,13 +113,13 @@ horizontal_alignment = 1
 [node name="IconLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 15
-text = "🤝"
+text = "🥫"
 horizontal_alignment = 1
 
 [node name="NameLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
-text = "Trust"
+text = "Food"
 horizontal_alignment = 1
 
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
@@ -131,7 +131,7 @@ show_percentage = false
 [node name="ValueLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
-text = "50"
+text = "MEDIUM"
 horizontal_alignment = 1
 
 [node name="Indicator2" type="PanelContainer" parent="MarginContainer/HBoxContainer"]
@@ -140,7 +140,7 @@ size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Indicator2"]
 layout_mode = 2
-theme_override_constants/separation = 0
+theme_override_constants/separation = 1
 alignment = 1
 
 [node name="ShieldLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator2/VBoxContainer"]
@@ -180,7 +180,7 @@ show_percentage = false
 [node name="ValueLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator2/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
-text = "50"
+text = "MEDIUM"
 horizontal_alignment = 1
 
 [node name="Indicator3" type="PanelContainer" parent="MarginContainer/HBoxContainer"]
@@ -189,7 +189,7 @@ size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Indicator3"]
 layout_mode = 2
-theme_override_constants/separation = 0
+theme_override_constants/separation = 1
 alignment = 1
 
 [node name="ShieldLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator3/VBoxContainer"]
@@ -229,7 +229,7 @@ show_percentage = false
 [node name="ValueLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator3/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
-text = "50"
+text = "MEDIUM"
 horizontal_alignment = 1
 
 [node name="Indicator4" type="PanelContainer" parent="MarginContainer/HBoxContainer"]
@@ -278,5 +278,5 @@ show_percentage = false
 [node name="ValueLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator4/VBoxContainer"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 9
-text = "0"
+text = "SAFE"
 horizontal_alignment = 1

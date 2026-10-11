@@ -70,12 +70,44 @@ func update_protection_shields():
 			shield_labels[ind].text = txt
 			shield_labels[ind].visible = true
 
+func format_vague_value(index: int, val: float) -> String:
+	var active_mod = SaveManager.current_save_data.get("active_modifier", "")
+	# If player bought exact insight, reveal exact numbers!
+	if active_mod in ["exact_insight", "timed_exact_insight"]:
+		return str(int(round(val)))
+
+	var ind_info = CardDatabase.INDICATORS.get(index, {})
+	var is_hazardous = ind_info.get("is_hazardous", false)
+
+	if is_hazardous:
+		if val <= 10.0:
+			return "SAFE"
+		elif val <= 35.0:
+			return "LOW RAD"
+		elif val <= 65.0:
+			return "WARM"
+		elif val <= 85.0:
+			return "DANGER"
+		else:
+			return "LETHAL"
+	else:
+		if val <= 15.0:
+			return "CRITICAL"
+		elif val <= 35.0:
+			return "LOW"
+		elif val <= 65.0:
+			return "MEDIUM"
+		elif val <= 85.0:
+			return "HIGH"
+		else:
+			return "FULL"
+
 func update_display_immediate():
 	for i in range(5):
 		if i < indicator_bars.size() and i < values.size():
 			var val = clamp(values[i], 0.0, 100.0)
 			indicator_bars[i].value = val
-			indicator_labels[i].text = str(int(round(val)))
+			indicator_labels[i].text = format_vague_value(i, val)
 
 func highlight_affected(affected_indices: Array, deltas: Array = [], insight_mode: String = ""):
 	for i in range(5):
@@ -142,6 +174,9 @@ func apply_deltas(deltas: Array) -> Dictionary:
 						protected = true
 						result["protection_triggered"] = true
 
+						# Unlock achievement for surviving death via protection!
+						SaveManager.unlock_achievement("survived_by_protection")
+
 						# Clamp safely
 						raw_new_val = 15.0 if is_min_fail else 85.0
 
@@ -170,7 +205,7 @@ func apply_deltas(deltas: Array) -> Dictionary:
 			glow_tween.tween_property(panel, "modulate", Color(0.4, 0.8, 1.8, 1.0), 0.15)
 			glow_tween.tween_property(panel, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.35)
 
-		lbl.text = str(int(round(new_val)))
+		lbl.text = format_vague_value(i, new_val)
 
 		if not protected:
 			if (not is_hazardous) and new_val <= 0.0:

@@ -26,6 +26,8 @@ extends Control
 var hours_survived = 0
 var survival_points = 0
 var current_block = {}
+var is_in_doom_history = false
+var pending_game_over_result = {}
 
 func _ready():
 	menu_btn.pressed.connect(_on_menu_pressed)
@@ -92,6 +94,8 @@ func _on_card_changed(card_index: int, _is_decision_card: bool):
 	SaveManager.save_game()
 
 func _on_drag_updated(_direction: String, choice_data: Dictionary):
+	if is_in_doom_history:
+		return
 	var affected = choice_data.get("affected", [])
 	var deltas = choice_data.get("deltas", [])
 	var active_mod = SaveManager.current_save_data.get("active_modifier", "")
@@ -102,6 +106,12 @@ func _on_drag_ended():
 
 func _on_decision_committed(_direction: String, choice_data: Dictionary):
 	top_panel.clear_highlights()
+
+	if is_in_doom_history:
+		# Player finished reading doom cards!
+		is_in_doom_history = false
+		show_final_game_over_popup(pending_game_over_result)
+		return
 
 	var deltas = choice_data.get("deltas", [0, 0, 0, 0, 0])
 	var result = top_panel.apply_deltas(deltas)
@@ -114,6 +124,9 @@ func _on_decision_committed(_direction: String, choice_data: Dictionary):
 
 	show_points_popup(pts_earned)
 
+	# Check time survived achievements
+	SaveManager.check_time_achievements(hours_survived)
+
 	SaveManager.consume_modifier_charge()
 	SaveManager.add_survival_points(pts_earned)
 	update_time_and_points_label()
@@ -122,7 +135,6 @@ func _on_decision_committed(_direction: String, choice_data: Dictionary):
 	var block_id = current_block.get("id", "")
 	var is_generic = current_block.get("is_generic", false)
 
-	# Only add non-generic blocks to used_block_ids so non-generic blocks do not re-appear!
 	if not is_generic and not block_id in used:
 		used.append(block_id)
 
@@ -134,7 +146,7 @@ func _on_decision_committed(_direction: String, choice_data: Dictionary):
 	SaveManager.save_game()
 
 	if result.get("game_over", false):
-		handle_game_over(result)
+		start_doom_history_sequence(result)
 	else:
 		load_next_block()
 
@@ -148,7 +160,100 @@ func show_points_popup(pts: int):
 	tween.tween_property(score_popup, "position", Vector2(100, 140), 0.8).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(score_popup, "modulate", Color(1.0, 0.85, 0.2, 0.0), 0.8)
 
-func handle_game_over(result: Dictionary):
+func start_doom_history_sequence(result: Dictionary):
+	is_in_doom_history = true
+	pending_game_over_result = result
+
+	# Unlock achievement if losing with insight active
+	var mod = SaveManager.current_save_data.get("active_modifier", "")
+	if mod != "":
+		SaveManager.unlock_achievement("lost_with_insight")
+
+	var idx = result.get("failed_index", 0)
+	var is_max = result.get("is_max", false)
+	var ind_info = CardDatabase.INDICATORS.get(idx, {"name": "Resource"})
+	var ind_name = ind_info.get("name", "Resource")
+
+	var doom_card_1 = {}
+	var doom_card_2 = {}
+
+	if idx == 0:
+		doom_card_1 = {
+			"title": "SYSTEM COLLAPSE: Power Grid Blackout",
+			"location": "Hibernatus Core Systems",
+			"description": "Sparks erupt from worn power cells. Indicators flicker off one by one as dark, freezing silence envelopes your shelter."
+		}
+		doom_card_2 = {
+			"title": "DOOM CHRONICLE: Frozen Slumber",
+			"location": "Sub-Zero Ruins",
+			"description": "Without energy, heat regulators fail completely. Cold frost encases your body as your journey ends in silence."
+		}
+	elif idx == 1:
+		doom_card_1 = {
+			"title": "FATAL FAMINE: Empty Rations",
+			"location": "Wasteland Camp",
+			"description": "Your last nutrient paste tube lies empty on the dry earth. Starvation weakens your limbs until you can walk no further."
+		}
+		doom_card_2 = {
+			"title": "DOOM CHRONICLE: Starvation's Toll",
+			"location": "The Scorched Trail",
+			"description": "Passing scavengers find your journal resting in the dust. The story of your hibernation ends here."
+		}
+	elif idx == 2:
+		doom_card_1 = {
+			"title": "EQUIPMENT MELTDOWN: Total Mechanical Failure",
+			"location": "Ruined Outpost Gate",
+			"description": "Screws sheer, gears grind into metal shavings, and your primary survival suit ruptures beyond repair."
+		}
+		doom_card_2 = {
+			"title": "DOOM CHRONICLE: Unprotected Fallout",
+			"location": "Shattered Perimeter",
+			"description": "Without working equipment, the harsh wasteland environment swallows you whole."
+		}
+	elif idx == 3:
+		doom_card_1 = {
+			"title": "PSYCHIC BREAKDOWN: Hallucinations",
+			"location": "The Endless Ashes",
+			"description": "Whispers in the dust grow deafening. Reality shifts as mind collapse drives you into raving panic."
+		}
+		doom_card_2 = {
+			"title": "DOOM CHRONICLE: Lost in the Abyss",
+			"location": "Unknown Mirage",
+			"description": "Wandering blindly into toxic radiation fog, your mind succumbs to the dark nightmare."
+		}
+	else:
+		doom_card_1 = {
+			"title": "LETHAL DOSE: Geiger Counter Spike",
+			"location": "Radioactive Crater Zone",
+			"description": "The Geiger counter screams continuously. Violet radiation beams pierce through your shielding."
+		}
+		doom_card_2 = {
+			"title": "DOOM CHRONICLE: Irradiated Dust",
+			"location": "Glow Horizon",
+			"description": "Acute radiation sickness overwhelms your organs. Your body collapses under the glowing sky."
+		}
+
+	var doom_block = {
+		"id": "doom_block",
+		"time_cost_hours": 0,
+		"reward_points": 0,
+		"story_cards": [doom_card_1],
+		"decision_card": {
+			"title": "FINAL CHRONICLE: Accepting Fate",
+			"description": doom_card_2["description"],
+			"choices": {
+				"right": {
+					"label": "View Survival Legend",
+					"deltas": [0, 0, 0, 0, 0],
+					"affected": []
+				}
+			}
+		}
+	}
+
+	card_swiper.load_block_data(doom_block, 0)
+
+func show_final_game_over_popup(result: Dictionary):
 	var idx = result.get("failed_index", 0)
 	var is_max = result.get("is_max", false)
 	var ind_info = CardDatabase.INDICATORS.get(idx, {"name": "Resource"})
@@ -156,15 +261,16 @@ func handle_game_over(result: Dictionary):
 
 	var reason_text = ""
 	if is_max:
-		reason_text = "OVERFLOW! Your " + ind_name + " reached lethal capacity (100)!"
+		reason_text = "OVERFLOW DOOM! Your " + ind_name + " reached lethal capacity (100)!"
 	else:
-		reason_text = "DEPLETED! Your " + ind_name + " dropped to zero (0)!"
+		reason_text = "DEPLETED DOOM! Your " + ind_name + " dropped to zero (0)!"
 
 	var gold_earned = SaveManager.calculate_non_linear_gold(survival_points, hours_survived)
 	SaveManager.add_gold(gold_earned)
+	SaveManager.record_high_score(hours_survived, survival_points)
 
 	game_over_reason.text = reason_text
-	game_over_stats.text = "Survived: " + SaveManager.format_time_survived(hours_survived) + " (" + str(survival_points) + " Pts)"
+	game_over_stats.text = "Hibernatus: " + SaveManager.current_save_data.get("player_name", "Hibernatus-09") + "\nSurvived: " + SaveManager.format_time_survived(hours_survived) + " (" + str(survival_points) + " Pts)"
 	gold_earned_label.text = "💰 Converted to +" + str(gold_earned) + " Scrap Gold!"
 
 	SaveManager.clear_save()

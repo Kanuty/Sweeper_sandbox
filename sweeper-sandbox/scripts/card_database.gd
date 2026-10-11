@@ -5,13 +5,13 @@ extends Node
 # Hazardous indicators start at 0, game over if max (100) is reached.
 const INDICATORS = {
 	0: {"name": "Energy", "icon_symbol": "⚡", "is_hazardous": false},
-	1: {"name": "Trust", "icon_symbol": "🤝", "is_hazardous": false},
+	1: {"name": "Food", "icon_symbol": "🥫", "is_hazardous": false},
 	2: {"name": "Equipment", "icon_symbol": "🔧", "is_hazardous": false},
 	3: {"name": "Sanity", "icon_symbol": "🧠", "is_hazardous": false},
 	4: {"name": "Radiation", "icon_symbol": "☢️", "is_hazardous": true}
 }
 
-# Rebalanced Shop items list
+# Shop items list
 var shop_items = [
 	# Insights
 	{
