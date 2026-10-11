@@ -11,7 +11,7 @@ const ROTATION_FACTOR = 0.0008
 @onready var card_panel = $CardPanel
 @onready var card_title = $CardPanel/VBoxContainer/TitleLabel
 @onready var card_subtitle = $CardPanel/VBoxContainer/SubtitleLabel
-@onready var card_desc = $CardPanel/VBoxContainer/ScrollContainer/DescLabel
+@onready var card_desc = $CardPanel/VBoxContainer/DescLabel
 @onready var choice_overlay = $CardPanel/ChoiceOverlay
 
 # Preview Action Options & Affected Indicators List Container
@@ -36,6 +36,8 @@ var drag_start_pos = Vector2.ZERO
 var initial_card_pos = Vector2.ZERO
 var current_direction = ""
 
+var typewriter_tween: Tween = null
+
 func _ready():
 	initial_card_pos = card_panel.position
 
@@ -55,8 +57,9 @@ func load_block_data(block: Dictionary, card_index: int = 0):
 		all_cards.append(c)
 
 	var decision = block.get("decision_card", {}).duplicate()
-	decision["type"] = "decision"
-	all_cards.append(decision)
+	if not decision.is_empty():
+		decision["type"] = "decision"
+		all_cards.append(decision)
 
 	current_card_index = clamp(card_index, 0, all_cards.size() - 1)
 	display_current_card()
@@ -65,20 +68,34 @@ func display_current_card():
 	if all_cards.is_empty():
 		return
 
+	if typewriter_tween and typewriter_tween.is_running():
+		typewriter_tween.kill()
+
 	var card = all_cards[current_card_index]
 	is_decision_card = (card.get("type", "") == "decision")
 
 	card_title.text = card.get("title", "")
 	card_subtitle.text = card.get("location", "")
-	card_desc.text = card.get("description", "")
+
+	var full_desc = card.get("description", "")
 
 	card_counter_label.text = "Card " + str(current_card_index + 1) + " of " + str(all_cards.size())
 
 	if is_decision_card:
 		actions_container.visible = true
+		card_desc.visible_ratio = 1.0
+		card_desc.text = full_desc
 		update_actions_list_preview(card.get("choices", {}))
 	else:
 		actions_container.visible = false
+		# Animated fast typewriter effect for story cards!
+		card_desc.text = full_desc
+		card_desc.visible_ratio = 0.0
+
+		# Typewriter duration relative to length, fast speed (0.015s per char, max 0.6s)
+		var duration = clamp(full_desc.length() * 0.012, 0.2, 0.6)
+		typewriter_tween = create_tween()
+		typewriter_tween.tween_property(card_desc, "visible_ratio", 1.0, duration).set_trans(Tween.TRANS_LINEAR)
 
 	update_button_visibility()
 	reset_card_position_with_entrance()
@@ -95,7 +112,7 @@ func update_actions_list_preview(choices: Dictionary):
 		if choices.has(dir):
 			var choice = choices[dir]
 			var affected_indices = choice.get("affected", [])
-			var deltas = choice.get("deltas", [0, 0, 0, 0])
+			var deltas = choice.get("deltas", [0, 0, 0, 0, 0])
 			var icons_info = ""
 
 			for idx in affected_indices:
@@ -118,7 +135,7 @@ func update_actions_list_preview(choices: Dictionary):
 
 			var lbl = Label.new()
 			lbl.text = dir_symbols[dir] + ": " + choice.get("label", "") + " [" + icons_info.strip_edges() + "]"
-			lbl.add_theme_font_size_override("font_size", 11)
+			lbl.add_theme_font_size_override("font_size", 12)
 			lbl.add_theme_color_override("font_color", Color(0.9, 0.9, 0.95))
 			actions_list.add_child(lbl)
 
