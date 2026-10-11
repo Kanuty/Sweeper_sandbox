@@ -8,238 +8,229 @@ const INDICATORS = {
 	3: {"name": "Tech", "icon_symbol": "⚡"}
 }
 
-# Card database list
-var cards = [
+# Decision blocks list
+var decision_blocks = [
 	{
-		"id": "card_01",
-		"title": "Clean Energy Initiative",
-		"description": "Engineers propose building a solar plant. It requires funding and land, but reduces pollution.",
-		"choices": {
-			"left": {
-				"label": "Reject Project",
-				"deltas": [-5, 10, -15, 0],
-				"affected": [0, 1, 2] # People, Treasury, Environment
+		"id": "block_01",
+		"time_cost_hours": 18, # Between 6h and 72h
+		"story_cards": [
+			{
+				"title": "SITUATION REPORT: Solar Grid Proposal",
+				"location": "Sector 4 - Renewable Energy Complex",
+				"description": "Reports show the nation's energy grid is approaching capacity. Chief engineers present a massive solar plant blueprint."
 			},
-			"right": {
-				"label": "Fund Solar Grid",
-				"deltas": [10, -15, 15, 10],
-				"affected": [0, 1, 2, 3]
-			},
-			"up": {
-				"label": "Over-invest Tech",
-				"deltas": [-10, -25, 10, 25],
-				"affected": [0, 1, 2, 3]
-			},
-			"down": {
-				"label": "Delay Decision",
-				"deltas": [-5, 0, -5, 0],
-				"affected": [0, 2]
+			{
+				"title": "COMMUNITY & CORPORATE STAKES",
+				"location": "City Hall Assembly",
+				"description": "Environmentalists urge immediate adoption, while treasury advisors warn of high initial construction costs."
+			}
+		],
+		"decision_card": {
+			"title": "DECISION: Solar Grid Initiative",
+			"description": "How will you respond to the renewable grid proposal?",
+			"choices": {
+				"left": {
+					"label": "Reject Solar Project",
+					"deltas": [-10, 15, -15, 0],
+					"affected": [0, 1, 2] # People, Treasury, Environment
+				},
+				"right": {
+					"label": "Fund Solar Grid Infrastructure",
+					"deltas": [10, -15, 15, 10],
+					"affected": [0, 1, 2, 3]
+				},
+				"up": {
+					"label": "Fast-Track Autonomous Solar Tech",
+					"deltas": [-5, -25, 10, 25],
+					"affected": [0, 1, 2, 3]
+				} # Down is optional/omitted here to demonstrate variable choices
 			}
 		}
 	},
 	{
-		"id": "card_02",
-		"title": "Tax Reform",
-		"description": "Citizens complain about rising costs, while corporations request tax exemptions for innovation.",
-		"choices": {
-			"left": {
-				"label": "Tax Corporations",
-				"deltas": [15, 15, 0, -10],
-				"affected": [0, 1, 3]
-			},
-			"right": {
-				"label": "Cut Citizen Tax",
-				"deltas": [20, -20, 0, 5],
-				"affected": [0, 1, 3]
-			},
-			"up": {
-				"label": "Universal Subsidy",
-				"deltas": [25, -30, 0, 0],
-				"affected": [0, 1]
-			},
-			"down": {
-				"label": "Austerity Measures",
-				"deltas": [-20, 25, -5, 0],
-				"affected": [0, 1, 2]
+		"id": "block_02",
+		"time_cost_hours": 48, # 2 Days
+		"story_cards": [
+			{
+				"title": "ECONOMIC CRISIS: Fiscal Year Review",
+				"location": "Central Ministry of Finance",
+				"description": "Inflation has increased citizen cost of living, while tech start-ups demand tax relief to remain competitive."
+			}
+		],
+		"decision_card": {
+			"title": "DECISION: Comprehensive Tax Reform",
+			"description": "Choose your financial policy direction for the coming quarter.",
+			"choices": {
+				"left": {
+					"label": "Increase Corporate Taxes",
+					"deltas": [15, 15, 0, -10],
+					"affected": [0, 1, 3]
+				},
+				"right": {
+					"label": "Grant Corporate Tax Exemptions",
+					"deltas": [-15, -10, 0, 20],
+					"affected": [0, 1, 3]
+				},
+				"up": {
+					"label": "Pass Universal Citizen Relief Subsidy",
+					"deltas": [20, -25, 0, 0],
+					"affected": [0, 1]
+				},
+				"down": {
+					"label": "Enforce Strict Government Austerity",
+					"deltas": [-20, 25, -5, 0],
+					"affected": [0, 1, 2]
+				}
 			}
 		}
 	},
 	{
-		"id": "card_03",
-		"title": "Industrial Expansion",
-		"description": "A major corporation wants to build a mega-factory in the national park area.",
-		"choices": {
-			"left": {
-				"label": "Deny Permit",
-				"deltas": [10, -10, 20, -5],
-				"affected": [0, 1, 2, 3]
+		"id": "block_03",
+		"time_cost_hours": 72, # 3 Days
+		"story_cards": [
+			{
+				"title": "LAND CONFLICT: Industrial Expansion",
+				"location": "National Forest Boundary",
+				"description": "A heavy manufacturing conglomerate has submitted a proposal for a mega-factory deep inside protected wilderness."
 			},
-			"right": {
-				"label": "Approve Factory",
-				"deltas": [-15, 20, -25, 15],
-				"affected": [0, 1, 2, 3]
-			},
-			"up": {
-				"label": "Automated Eco-Hub",
-				"deltas": [0, -15, -5, 20],
-				"affected": [1, 2, 3]
-			},
-			"down": {
-				"label": "Protest Stoppage",
-				"deltas": [-10, 0, 10, 0],
-				"affected": [0, 2]
+			{
+				"title": "PROTESTS & LOBBYING",
+				"location": "Capitol Square",
+				"description": "Thousands of citizens protest against deforestation, while economic analysts highlight thousands of new potential jobs."
+			}
+		],
+		"decision_card": {
+			"title": "DECISION: Factory Construction Permit",
+			"description": "What is your ruling on the mega-factory zoning permit?",
+			"choices": {
+				"left": {
+					"label": "Deny Construction Permit",
+					"deltas": [10, -10, 20, -5],
+					"affected": [0, 1, 2, 3]
+				},
+				"right": {
+					"label": "Approve Mega-Factory Permit",
+					"deltas": [-15, 20, -25, 15],
+					"affected": [0, 1, 2, 3]
+				}
+				# Only Left/Right available for basic binary choice
 			}
 		}
 	},
 	{
-		"id": "card_04",
-		"title": "AI Surveillance",
-		"description": "Security forces urge installation of citywide AI surveillance to cut down crime rates.",
-		"choices": {
-			"left": {
-				"label": "Ban Surveillance",
-				"deltas": [15, 0, 0, -15],
-				"affected": [0, 3]
-			},
-			"right": {
-				"label": "Deploy AI System",
-				"deltas": [-15, -10, 0, 20],
-				"affected": [0, 1, 3]
-			},
-			"up": {
-				"label": "Full Automation",
-				"deltas": [-25, -20, 0, 30],
-				"affected": [0, 1, 3]
-			},
-			"down": {
-				"label": "Public Hearing",
-				"deltas": [5, -5, 0, 0],
-				"affected": [0, 1]
+		"id": "block_04",
+		"time_cost_hours": 12,
+		"story_cards": [
+			{
+				"title": "SECURITY ALERT: Crime Surge",
+				"location": "Downtown Metropolitan District",
+				"description": "Surging crime rates in urban centers have raised public panic. Security commanders urge installation of AI facial recognition cameras."
+			}
+		],
+		"decision_card": {
+			"title": "DECISION: AI Surveillance Network",
+			"description": "Will you deploy automated surveillance across all public sectors?",
+			"choices": {
+				"left": {
+					"label": "Ban AI Surveillance",
+					"deltas": [15, 0, 0, -15],
+					"affected": [0, 3]
+				},
+				"right": {
+					"label": "Deploy AI Surveillance Network",
+					"deltas": [-15, -10, 0, 20],
+					"affected": [0, 1, 3]
+				},
+				"up": {
+					"label": "Mandate Universal Biometric Tracking",
+					"deltas": [-25, -20, 0, 30],
+					"affected": [0, 1, 3]
+				}
 			}
 		}
 	},
 	{
-		"id": "card_05",
-		"title": "Agricultural Modernization",
-		"description": "Farmers demand new automated irrigation tech due to drought warnings.",
-		"choices": {
-			"left": {
-				"label": "Traditional Farming",
-				"deltas": [-10, 5, -10, -5],
-				"affected": [0, 1, 2, 3]
-			},
-			"right": {
-				"label": "Fund Smart Drones",
-				"deltas": [10, -15, 10, 15],
-				"affected": [0, 1, 2, 3]
-			},
-			"up": {
-				"label": "Import Food Supplies",
-				"deltas": [15, -20, 5, -5],
-				"affected": [0, 1, 2, 3]
-			},
-			"down": {
-				"label": "Water Rationing",
-				"deltas": [-15, 10, 15, 0],
-				"affected": [0, 1, 2]
+		"id": "block_05",
+		"time_cost_hours": 36, # 1.5 Days
+		"story_cards": [
+			{
+				"title": "AGRICULTURE CRISIS: Drought Warning",
+				"location": "Southern Farming Valley",
+				"description": "Meteorologists forecast a severe 6-month dry spell. Agricultural unions demand state funding for automated smart irrigation."
+			}
+		],
+		"decision_card": {
+			"title": "DECISION: Agricultural Drought Policy",
+			"description": "How will you manage national food and water security?",
+			"choices": {
+				"left": {
+					"label": "Enforce Strict Water Rationing",
+					"deltas": [-15, 10, 15, 0],
+					"affected": [0, 1, 2]
+				},
+				"right": {
+					"label": "Fund Smart Irrigation Drones",
+					"deltas": [10, -15, 10, 15],
+					"affected": [0, 1, 2, 3]
+				},
+				"up": {
+					"label": "Subsidize Emergency Food Imports",
+					"deltas": [15, -20, 5, -5],
+					"affected": [0, 1, 2, 3]
+				}
 			}
 		}
 	},
 	{
-		"id": "card_06",
-		"title": "Cyber Security Breach",
-		"description": "A rogue hacker group locked central financial databases demanding ransom.",
-		"choices": {
-			"left": {
-				"label": "Pay Ransom",
-				"deltas": [-5, -25, 0, -10],
-				"affected": [0, 1, 3]
+		"id": "block_06",
+		"time_cost_hours": 24, # 1 Day
+		"story_cards": [
+			{
+				"title": "CYBER INCIDENT: Ransomware Attack",
+				"location": "National Cyber Security HQ",
+				"description": "A rogue hacker syndicate has encrypted central banking databases, demanding 50 million in cryptocurrency."
 			},
-			"right": {
-				"label": "Counter-Hack",
-				"deltas": [5, -10, 0, 15],
-				"affected": [0, 1, 3]
-			},
-			"up": {
-				"label": "Full System Reboot",
-				"deltas": [-15, 10, 0, 20],
-				"affected": [0, 1, 3]
-			},
-			"down": {
-				"label": "Ignore Threat",
-				"deltas": [-20, -20, 0, -20],
-				"affected": [0, 1, 3]
+			{
+				"title": "FINANCIAL GRIDLOCK",
+				"location": "Commercial Banks",
+				"description": "ATMs and electronic transactions are frozen nationwide. Chaos is mounting among small business owners."
 			}
-		}
-	},
-	{
-		"id": "card_07",
-		"title": "Public Health Emergency",
-		"description": "A mysterious strain of flu spreads across major urban residential sectors.",
-		"choices": {
-			"left": {
-				"label": "City Lockdown",
-				"deltas": [-15, -15, 10, 0],
-				"affected": [0, 1, 2]
-			},
-			"right": {
-				"label": "Fast-Track Vaccine",
-				"deltas": [15, -20, 0, 15],
-				"affected": [0, 1, 3]
-			},
-			"up": {
-				"label": "Nanotech Cure",
-				"deltas": [20, -25, -5, 25],
-				"affected": [0, 1, 2, 3]
-			},
-			"down": {
-				"label": "Sanitation Blitz",
-				"deltas": [5, -10, 15, 0],
-				"affected": [0, 1, 2]
-			}
-		}
-	},
-	{
-		"id": "card_08",
-		"title": "Space Exploration Program",
-		"description": "Scientists propose a orbital satellite grid for global climate and resource tracking.",
-		"choices": {
-			"left": {
-				"label": "Scrap Program",
-				"deltas": [-5, 15, -10, -15],
-				"affected": [0, 1, 2, 3]
-			},
-			"right": {
-				"label": "Launch Satellites",
-				"deltas": [10, -20, 15, 20],
-				"affected": [0, 1, 2, 3]
-			},
-			"up": {
-				"label": "Deep Space Probe",
-				"deltas": [15, -30, 0, 30],
-				"affected": [0, 1, 3]
-			},
-			"down": {
-				"label": "Ground Telescopes",
-				"deltas": [5, -5, 0, 10],
-				"affected": [0, 1, 3]
+		],
+		"decision_card": {
+			"title": "DECISION: Ransomware Countermeasure",
+			"description": "Choose how to resolve the cyber lockdown.",
+			"choices": {
+				"left": {
+					"label": "Pay Ransomware Demand",
+					"deltas": [-5, -25, 0, -10],
+					"affected": [0, 1, 3]
+				},
+				"right": {
+					"label": "Authorize State Cyber Counter-Hack",
+					"deltas": [5, -10, 0, 15],
+					"affected": [0, 1, 3]
+				},
+				"up": {
+					"label": "Purge & Full System Reboot",
+					"deltas": [-15, 10, 0, 20],
+					"affected": [0, 1, 3]
+				}
 			}
 		}
 	}
 ]
 
-func get_card_by_id(card_id: String) -> Dictionary:
-	for card in cards:
-		if card["id"] == card_id:
-			return card
-	return cards[0]
+func get_block_by_id(block_id: String) -> Dictionary:
+	for block in decision_blocks:
+		if block["id"] == block_id:
+			return block
+	return decision_blocks[0]
 
-func get_random_card(exclude_ids: Array = []) -> Dictionary:
+func get_random_block(exclude_ids: Array = []) -> Dictionary:
 	var available = []
-	for card in cards:
-		if not card["id"] in exclude_ids:
-			available.append(card)
+	for block in decision_blocks:
+		if not block["id"] in exclude_ids:
+			available.append(block)
 	if available.size() == 0:
-		# Reset pool if all used
-		return cards[randi() % cards.size()]
+		return decision_blocks[randi() % decision_blocks.size()]
 	return available[randi() % available.size()]

@@ -4,11 +4,11 @@ const SAVE_PATH = "user://savegame.json"
 
 var current_save_data = {
 	"has_active_game": false,
-	"days_survived": 0,
-	"indicators": [50.0, 50.0, 50.0, 50.0], # 0: People, 1: Treasury, 2: Environment, 3: Tech
-	"used_card_ids": [],
-	"active_card_id": "",
-	"protection_active": false
+	"hours_survived": 0,
+	"indicators": [50.0, 50.0, 50.0, 50.0],
+	"used_block_ids": [],
+	"active_block_id": "",
+	"active_card_index": 0
 }
 
 func _ready():
@@ -41,23 +41,33 @@ func load_game():
 func start_new_game(default_indicators = [50.0, 50.0, 50.0, 50.0]):
 	current_save_data = {
 		"has_active_game": true,
-		"days_survived": 0,
+		"hours_survived": 0,
 		"indicators": default_indicators.duplicate(),
-		"used_card_ids": [],
-		"active_card_id": "",
-		"protection_active": false
+		"used_block_ids": [],
+		"active_block_id": "",
+		"active_card_index": 0
 	}
 	save_game()
 
 func clear_save():
 	current_save_data = {
 		"has_active_game": false,
-		"days_survived": 0,
+		"hours_survived": 0,
 		"indicators": [50.0, 50.0, 50.0, 50.0],
-		"used_card_ids": [],
-		"active_card_id": "",
-		"protection_active": false
+		"used_block_ids": [],
+		"active_block_id": "",
+		"active_card_index": 0
 	}
 	if FileAccess.file_exists(SAVE_PATH):
 		DirAccess.remove_absolute(SAVE_PATH)
 	save_game()
+
+func format_time_survived(hours: int) -> String:
+	var days = hours / 24
+	var rem_hours = hours % 24
+	if days == 0:
+		return str(rem_hours) + " Hours"
+	elif rem_hours == 0:
+		return str(days) + " Days"
+	else:
+		return str(days) + " Days, " + str(rem_hours) + " Hours"
