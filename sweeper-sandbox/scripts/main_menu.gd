@@ -6,7 +6,7 @@ extends Control
 @onready var how_to_play_btn = $MarginContainer/VBoxContainer/ButtonsContainer/HowToPlayBtn
 @onready var exit_btn = $MarginContainer/VBoxContainer/ButtonsContainer/ExitBtn
 
-@onready var gold_label = $MarginContainer/VBoxContainer/HeaderContainer/GoldLabel
+@onready var gold_label = $TopGoldBar/GoldLabel
 @onready var shop_modal = $ShopModal
 @onready var how_to_play_modal = $HowToPlayModal
 @onready var close_how_to_play_btn = $HowToPlayModal/Panel/VBoxContainer/CloseBtn
@@ -25,8 +25,8 @@ func _ready():
 	update_ui_state()
 
 func update_ui_state():
-	var gold = SaveManager.current_save_data.get("gold_coins", 100)
-	gold_label.text = "💰 Gold Balance: " + str(gold)
+	var gold = SaveManager.current_save_data.get("gold_coins", 0)
+	gold_label.text = "💰 Gold Balance: " + str(gold) + " Coins"
 
 	if SaveManager.has_save():
 		continue_btn.disabled = false
@@ -36,7 +36,7 @@ func update_ui_state():
 		continue_btn.text = "CONTINUE (No Saved Game)"
 
 	shop_btn.disabled = false
-	shop_btn.text = "INSIGHT SHOP"
+	shop_btn.text = "SHOP"
 
 func _on_new_game_pressed():
 	SaveManager.start_new_game()

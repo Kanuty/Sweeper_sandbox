@@ -11,7 +11,7 @@ const ROTATION_FACTOR = 0.0008
 @onready var card_panel = $CardPanel
 @onready var card_title = $CardPanel/VBoxContainer/TitleLabel
 @onready var card_subtitle = $CardPanel/VBoxContainer/SubtitleLabel
-@onready var card_desc = $CardPanel/VBoxContainer/DescLabel
+@onready var card_desc = $CardPanel/VBoxContainer/ScrollContainer/DescLabel
 @onready var choice_overlay = $CardPanel/ChoiceOverlay
 
 # Preview Action Options & Affected Indicators List Container
@@ -118,7 +118,7 @@ func update_actions_list_preview(choices: Dictionary):
 
 			var lbl = Label.new()
 			lbl.text = dir_symbols[dir] + ": " + choice.get("label", "") + " [" + icons_info.strip_edges() + "]"
-			lbl.add_theme_font_size_override("font_size", 12)
+			lbl.add_theme_font_size_override("font_size", 11)
 			lbl.add_theme_color_override("font_color", Color(0.9, 0.9, 0.95))
 			actions_list.add_child(lbl)
 

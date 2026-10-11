@@ -11,7 +11,7 @@ const INDICATORS = {
 	4: {"name": "Radiation", "icon_symbol": "☢️", "is_hazardous": true}
 }
 
-# Shop items list
+# Rebalanced Shop items list
 var shop_items = [
 	# Insights
 	{

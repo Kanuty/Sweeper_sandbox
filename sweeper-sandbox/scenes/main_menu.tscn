@@ -21,83 +21,98 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.0823529, 0.0980392, 0.133333, 1)
 
-[node name="MarginContainer" type="MarginContainer" parent="."]
+[node name="TopGoldBar" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 30.0
+grow_horizontal = 2
+color = Color(0.12, 0.15, 0.2, 0.95)
+
+[node name="GoldLabel" type="Label" parent="TopGoldBar"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 30
-theme_override_constants/margin_top = 50
-theme_override_constants/margin_right = 30
-theme_override_constants/margin_bottom = 40
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 12
+text = "💰 Gold Balance: 0 Coins"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = 30.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 15
+theme_override_constants/separation = 12
 alignment = 1
 
 [node name="HeaderContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 8
+theme_override_constants/separation = 4
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 34
+theme_override_font_sizes/font_size = 28
 text = "DECISION SWIPER"
 horizontal_alignment = 1
 
 [node name="SubtitleLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.701961, 0.74902, 0.823529, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 12
 text = "Balance the Realm with Every Choice"
 horizontal_alignment = 1
 
-[node name="GoldLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
-layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 16
-text = "💰 Gold Balance: 100"
-horizontal_alignment = 1
-
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 20)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
 [node name="ButtonsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 14
+theme_override_constants/separation = 10
 
 [node name="NewGameBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 15
 text = "NEW GAME"
 
 [node name="ContinueBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 15
 text = "CONTINUE GAME"
 
 [node name="ShopBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
-text = "INSIGHT SHOP"
+theme_override_font_sizes/font_size = 15
+text = "SHOP"
 
 [node name="HowToPlayBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 15
 text = "HOW TO PLAY"
 
 [node name="ExitBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 15
 text = "EXIT GAME"
 
 [node name="ShopModal" parent="." instance=ExtResource("2_shop")]
@@ -121,10 +136,10 @@ anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -230.0
-offset_top = -360.0
-offset_right = 230.0
-offset_bottom = 360.0
+offset_left = -155.0
+offset_top = -240.0
+offset_right = 155.0
+offset_bottom = 240.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -133,17 +148,17 @@ layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = 20.0
-offset_top = 20.0
-offset_right = -20.0
-offset_bottom = -20.0
+offset_left = 12.0
+offset_top = 12.0
+offset_right = -12.0
+offset_bottom = -12.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 15
+theme_override_constants/separation = 8
 
 [node name="Title" type="Label" parent="HowToPlayModal/Panel/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 24
+theme_override_font_sizes/font_size = 18
 text = "HOW TO PLAY"
 horizontal_alignment = 1
 
@@ -163,15 +178,14 @@ Survive as many [b]Days & Hours[/b] as possible while balancing 4 core resources
 • Resource increases trigger a [color=yellow]Yellow Glow[/color]!
 • Resource decreases trigger a [color=deep_sky_blue]Blue Glow[/color]!
 
-[b]Insights & Shop Power-Ups:[/b]
+[b]Insights & Shop Upgrades:[/b]
 • [b]Default:[/b] Drag preview shows affected indicator icons.
 • [b]Small Insight:[/b] Displays value change ranges (e.g., +5..15, -10..20).
 • [b]Exact Insight:[/b] Displays EXACT delta numbers (e.g., +15, -10).
-• [b]Timed Insights:[/b] Active for 3 Decision Blocks!
-• Buy Insights in the Shop using persistent [color=gold]Gold Currency[/color] earned from surviving!"
+• Buy Protections & Insights in the Shop using persistent [color=gold]Gold Currency[/color]!"
 
 [node name="CloseBtn" type="Button" parent="HowToPlayModal/Panel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 45)
+custom_minimum_size = Vector2(0, 38)
 layout_mode = 2
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 15
 text = "GOT IT!"
