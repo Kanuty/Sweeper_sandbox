@@ -8,11 +8,47 @@ const INDICATORS = {
 	3: {"name": "Tech", "icon_symbol": "⚡"}
 }
 
+# Shop items list
+var shop_items = [
+	{
+		"id": "item_exact_insight",
+		"name": "Exact Insight (Permanent)",
+		"description": "Shows EXACT delta value changes (e.g., +15, -10) for every choice.",
+		"price": 150,
+		"type": "exact_insight",
+		"charges": 0 # Permanent
+	},
+	{
+		"id": "item_small_insight",
+		"name": "Small Insight (Permanent)",
+		"description": "Shows value change ranges (e.g., +5 to +15, -10 to -20) for every choice.",
+		"price": 80,
+		"type": "small_insight",
+		"charges": 0 # Permanent
+	},
+	{
+		"id": "item_timed_exact_insight",
+		"name": "Timed Exact Insight (3 Blocks)",
+		"description": "Shows EXACT delta values for the next 3 Decision Blocks.",
+		"price": 50,
+		"type": "timed_exact_insight",
+		"charges": 3
+	},
+	{
+		"id": "item_timed_small_insight",
+		"name": "Timed Small Insight (3 Blocks)",
+		"description": "Shows value change ranges for the next 3 Decision Blocks.",
+		"price": 30,
+		"type": "timed_small_insight",
+		"charges": 3
+	}
+]
+
 # Decision blocks list
 var decision_blocks = [
 	{
 		"id": "block_01",
-		"time_cost_hours": 18, # Between 6h and 72h
+		"time_cost_hours": 18,
 		"story_cards": [
 			{
 				"title": "SITUATION REPORT: Solar Grid Proposal",
@@ -32,7 +68,7 @@ var decision_blocks = [
 				"left": {
 					"label": "Reject Solar Project",
 					"deltas": [-10, 15, -15, 0],
-					"affected": [0, 1, 2] # People, Treasury, Environment
+					"affected": [0, 1, 2]
 				},
 				"right": {
 					"label": "Fund Solar Grid Infrastructure",
@@ -43,13 +79,13 @@ var decision_blocks = [
 					"label": "Fast-Track Autonomous Solar Tech",
 					"deltas": [-5, -25, 10, 25],
 					"affected": [0, 1, 2, 3]
-				} # Down is optional/omitted here to demonstrate variable choices
+				}
 			}
 		}
 	},
 	{
 		"id": "block_02",
-		"time_cost_hours": 48, # 2 Days
+		"time_cost_hours": 48,
 		"story_cards": [
 			{
 				"title": "ECONOMIC CRISIS: Fiscal Year Review",
@@ -86,7 +122,7 @@ var decision_blocks = [
 	},
 	{
 		"id": "block_03",
-		"time_cost_hours": 72, # 3 Days
+		"time_cost_hours": 72,
 		"story_cards": [
 			{
 				"title": "LAND CONFLICT: Industrial Expansion",
@@ -113,7 +149,6 @@ var decision_blocks = [
 					"deltas": [-15, 20, -25, 15],
 					"affected": [0, 1, 2, 3]
 				}
-				# Only Left/Right available for basic binary choice
 			}
 		}
 	},
@@ -151,7 +186,7 @@ var decision_blocks = [
 	},
 	{
 		"id": "block_05",
-		"time_cost_hours": 36, # 1.5 Days
+		"time_cost_hours": 36,
 		"story_cards": [
 			{
 				"title": "AGRICULTURE CRISIS: Drought Warning",
@@ -183,7 +218,7 @@ var decision_blocks = [
 	},
 	{
 		"id": "block_06",
-		"time_cost_hours": 24, # 1 Day
+		"time_cost_hours": 24,
 		"story_cards": [
 			{
 				"title": "CYBER INCIDENT: Ransomware Attack",
