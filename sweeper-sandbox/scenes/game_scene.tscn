@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/game_scene.gd" id="1_game_scene"]
 [ext_resource type="PackedScene" path="res://scenes/top_panel.tscn" id="2_top_panel"]
 [ext_resource type="PackedScene" path="res://scenes/card_swiper.tscn" id="3_card_swiper"]
+[ext_resource type="PackedScene" path="res://scenes/shop.tscn" id="4_shop"]
 
 [node name="GameScene" type="Control"]
 layout_mode = 3
@@ -34,29 +35,39 @@ offset_bottom = 150.0
 grow_horizontal = 2
 
 [node name="SpacerLeft" type="Control" parent="Header"]
-custom_minimum_size = Vector2(20, 0)
+custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
 [node name="DaysLabel" type="Label" parent="Header"]
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 18
-text = "Decisions: 0"
+theme_override_font_sizes/font_size = 14
+text = "Time: 0 Hours"
 vertical_alignment = 1
 
-[node name="MenuBtn" type="Button" parent="Header"]
-custom_minimum_size = Vector2(80, 0)
+[node name="ShopBtn" type="Button" parent="Header"]
+custom_minimum_size = Vector2(65, 0)
 layout_mode = 2
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 12
+text = "SHOP"
+
+[node name="MenuBtn" type="Button" parent="Header"]
+custom_minimum_size = Vector2(65, 0)
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
 text = "MENU"
 
 [node name="SpacerRight" type="Control" parent="Header"]
-custom_minimum_size = Vector2(20, 0)
+custom_minimum_size = Vector2(10, 0)
 layout_mode = 2
 
 [node name="CardSwiper" parent="." instance=ExtResource("3_card_swiper")]
 layout_mode = 1
 offset_top = 155.0
+
+[node name="ShopModal" parent="." instance=ExtResource("4_shop")]
+visible = false
+layout_mode = 1
 
 [node name="GameOverModal" type="ColorRect" parent="."]
 visible = false
@@ -76,9 +87,9 @@ anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
 offset_left = -220.0
-offset_top = -200.0
+offset_top = -220.0
 offset_right = 220.0
-offset_bottom = 200.0
+offset_bottom = 220.0
 grow_horizontal = 2
 grow_vertical = 2
 
@@ -93,7 +104,7 @@ offset_right = -20.0
 offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/separation = 15
+theme_override_constants/separation = 12
 alignment = 1
 
 [node name="Title" type="Label" parent="GameOverModal/Panel/VBoxContainer"]
@@ -105,7 +116,7 @@ horizontal_alignment = 1
 
 [node name="ReasonLabel" type="Label" parent="GameOverModal/Panel/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 15
 text = "Reason description here"
 horizontal_alignment = 1
 autowrap_mode = 2
@@ -113,22 +124,29 @@ autowrap_mode = 2
 [node name="StatsLabel" type="Label" parent="GameOverModal/Panel/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.85, 0.9, 1)
-theme_override_font_sizes/font_size = 18
-text = "You survived 0 decisions."
+theme_override_font_sizes/font_size = 16
+text = "You survived for 0 Hours."
+horizontal_alignment = 1
+
+[node name="GoldEarnedLabel" type="Label" parent="GameOverModal/Panel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 16
+text = "💰 Earned +0 Gold Coins!"
 horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="GameOverModal/Panel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 15)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 
 [node name="PlayAgainBtn" type="Button" parent="GameOverModal/Panel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "PLAY AGAIN"
 
 [node name="MainMenuBtn" type="Button" parent="GameOverModal/Panel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 48)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "MAIN MENU"

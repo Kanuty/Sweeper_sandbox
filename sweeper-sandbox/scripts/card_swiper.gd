@@ -48,7 +48,6 @@ func load_block_data(block: Dictionary, card_index: int = 0):
 	current_block_data = block
 	all_cards = []
 
-	# Assemble story cards + final decision card
 	var stories = block.get("story_cards", [])
 	for s in stories:
 		var c = s.duplicate()
@@ -82,33 +81,49 @@ func display_current_card():
 		actions_container.visible = false
 
 	update_button_visibility()
-	reset_card_position()
+	reset_card_position_with_entrance()
 	emit_signal("card_changed", current_card_index, is_decision_card)
 
 func update_actions_list_preview(choices: Dictionary):
-	# Clear existing labels
 	for child in actions_list.get_children():
 		child.queue_free()
 
+	var active_mod = SaveManager.current_save_data.get("active_modifier", "")
 	var dir_symbols = {"left": "◀ LEFT", "right": "RIGHT ▶", "up": "▲ UP", "down": "▼ DOWN"}
+
 	for dir in ["left", "right", "up", "down"]:
 		if choices.has(dir):
 			var choice = choices[dir]
 			var affected_indices = choice.get("affected", [])
-			var icons = ""
+			var deltas = choice.get("deltas", [0, 0, 0, 0])
+			var icons_info = ""
+
 			for idx in affected_indices:
 				var info = CardDatabase.INDICATORS.get(idx, {"icon_symbol": "?"})
-				icons += info.get("icon_symbol", "") + " "
+				var sym = info.get("icon_symbol", "")
+				var d = deltas[idx] if idx < deltas.size() else 0
+
+				if active_mod in ["exact_insight", "timed_exact_insight"]:
+					var val_str = ("+" if d >= 0 else "") + str(d)
+					icons_info += sym + "(" + val_str + ") "
+				elif active_mod in ["small_insight", "timed_small_insight"]:
+					var range_str = "0"
+					if d > 0:
+						range_str = "+5..15" if d <= 15 else "+15..30"
+					elif d < 0:
+						range_str = "-5..15" if d >= -15 else "-15..30"
+					icons_info += sym + "(" + range_str + ") "
+				else:
+					icons_info += sym + " "
 
 			var lbl = Label.new()
-			lbl.text = dir_symbols[dir] + ": " + choice.get("label", "") + " [" + icons.strip_edges() + "]"
+			lbl.text = dir_symbols[dir] + ": " + choice.get("label", "") + " [" + icons_info.strip_edges() + "]"
 			lbl.add_theme_font_size_override("font_size", 12)
 			lbl.add_theme_color_override("font_color", Color(0.9, 0.9, 0.95))
 			actions_list.add_child(lbl)
 
 func update_button_visibility():
 	if not is_decision_card:
-		# Story card navigation: Left = Prev (if index > 0), Right = Next
 		btn_left.visible = (current_card_index > 0)
 		btn_left.text = "◀ PREV"
 		btn_right.visible = true
@@ -116,7 +131,6 @@ func update_button_visibility():
 		btn_up.visible = false
 		btn_down.visible = false
 	else:
-		# Decision card: Show buttons corresponding to available choices
 		var choices = all_cards[current_card_index].get("choices", {})
 		btn_left.visible = choices.has("left")
 		btn_left.text = "◀ " + choices.get("left", {}).get("label", "LEFT")
@@ -156,9 +170,23 @@ func _on_btn_down_pressed():
 func reset_card_position():
 	card_panel.position = initial_card_pos
 	card_panel.rotation = 0.0
+	card_panel.scale = Vector2(1.0, 1.0)
 	choice_overlay.text = ""
 	current_direction = ""
 	emit_signal("drag_ended")
+
+func reset_card_position_with_entrance():
+	card_panel.position = initial_card_pos + Vector2(0, -30)
+	card_panel.rotation = 0.05
+	card_panel.scale = Vector2(0.95, 0.95)
+	choice_overlay.text = ""
+	current_direction = ""
+	emit_signal("drag_ended")
+
+	var tween = create_tween().set_parallel(true)
+	tween.tween_property(card_panel, "position", initial_card_pos, 0.35).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	tween.tween_property(card_panel, "rotation", 0.0, 0.35)
+	tween.tween_property(card_panel, "scale", Vector2(1.0, 1.0), 0.35)
 
 func _gui_input(event):
 	if all_cards.is_empty():
@@ -220,7 +248,6 @@ func update_drag_position(offset: Vector2):
 		current_direction = "down" if offset.y > 0 else "up"
 
 	if not is_decision_card:
-		# Story cards: Only horizontal reading swipes allowed
 		if current_direction in ["left", "right"]:
 			choice_overlay.text = "READ PREV" if current_direction == "left" else "READ NEXT"
 		else:
@@ -228,11 +255,10 @@ func update_drag_position(offset: Vector2):
 			choice_overlay.text = ""
 		return
 
-	# Decision card
 	var choices = all_cards[current_card_index].get("choices", {})
 	if choices.has(current_direction):
 		var choice = choices[current_direction]
-		choice_overlay.text = choice.get("label", "").to_upper()
+		choice_overlay.text = current_direction.to_upper() + ": " + choice.get("label", "")
 		emit_signal("drag_updated", current_direction, choice)
 	else:
 		current_direction = ""
@@ -255,8 +281,8 @@ func finish_drag():
 			commit_choice(current_direction)
 	else:
 		var tween = create_tween().set_parallel(true)
-		tween.tween_property(card_panel, "position", initial_card_pos, 0.2).set_trans(Tween.TRANS_SPRING)
-		tween.tween_property(card_panel, "rotation", 0.0, 0.2)
+		tween.tween_property(card_panel, "position", initial_card_pos, 0.3).set_trans(Tween.TRANS_SPRING).set_ease(Tween.EASE_OUT)
+		tween.tween_property(card_panel, "rotation", 0.0, 0.3)
 		choice_overlay.text = ""
 		current_direction = ""
 		emit_signal("drag_ended")
@@ -271,14 +297,18 @@ func commit_choice(direction: String):
 
 		var target_pos = initial_card_pos
 		match direction:
-			"left": target_pos = Vector2(-600, card_panel.position.y)
-			"right": target_pos = Vector2(600, card_panel.position.y)
-			"up": target_pos = Vector2(card_panel.position.x, -800)
-			"down": target_pos = Vector2(card_panel.position.x, 800)
+			"left": target_pos = Vector2(-650, card_panel.position.y)
+			"right": target_pos = Vector2(650, card_panel.position.y)
+			"up": target_pos = Vector2(card_panel.position.x, -850)
+			"down": target_pos = Vector2(card_panel.position.x, 850)
 
-		var tween = create_tween()
-		tween.tween_property(card_panel, "position", target_pos, 0.25).set_trans(Tween.TRANS_QUAD)
-		tween.tween_callback(func():
+		var tween = create_tween().set_parallel(true)
+		tween.tween_property(card_panel, "position", target_pos, 0.25).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
+		tween.tween_property(card_panel, "rotation", (card_panel.rotation + 0.1) if direction != "left" else (card_panel.rotation - 0.1), 0.25)
+
+		var seq_tween = create_tween()
+		seq_tween.tween_interval(0.25)
+		seq_tween.tween_callback(func():
 			reset_card_position()
 			emit_signal("decision_committed", direction, choice)
 		)

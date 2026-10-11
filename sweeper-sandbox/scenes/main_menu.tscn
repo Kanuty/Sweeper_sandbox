@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=3 format=3]
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_main_menu"]
+[ext_resource type="PackedScene" path="res://scenes/shop.tscn" id="2_shop"]
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -28,70 +29,80 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/margin_left = 30
-theme_override_constants/margin_top = 60
+theme_override_constants/margin_top = 50
 theme_override_constants/margin_right = 30
-theme_override_constants/margin_bottom = 50
+theme_override_constants/margin_bottom = 40
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 15
 alignment = 1
 
 [node name="HeaderContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_override_font_sizes/font_size = 34
 text = "DECISION SWIPER"
 horizontal_alignment = 1
 
 [node name="SubtitleLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0.701961, 0.74902, 0.823529, 1)
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 15
 text = "Balance the Realm with Every Choice"
 horizontal_alignment = 1
 
+[node name="GoldLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_font_sizes/font_size = 16
+text = "💰 Gold Balance: 100"
+horizontal_alignment = 1
+
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 30)
+custom_minimum_size = Vector2(0, 20)
 layout_mode = 2
 
 [node name="ButtonsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 15
+theme_override_constants/separation = 14
 
 [node name="NewGameBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 55)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "NEW GAME"
 
 [node name="ContinueBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 55)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "CONTINUE GAME"
 
 [node name="ShopBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 55)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
-disabled = true
-text = "SHOP (Locked)"
+text = "INSIGHT SHOP"
 
 [node name="HowToPlayBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 55)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "HOW TO PLAY"
 
 [node name="ExitBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 55)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "EXIT GAME"
+
+[node name="ShopModal" parent="." instance=ExtResource("2_shop")]
+visible = false
+layout_mode = 1
 
 [node name="HowToPlayModal" type="ColorRect" parent="."]
 visible = false
@@ -146,20 +157,18 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 bbcode_enabled = true
 text = "[b]Goal:[/b]
-Balance your realm and survive as many [b]Days and Hours[/b] as possible!
+Survive as many [b]Days & Hours[/b] as possible while balancing 4 core resources!
 
-[b]Decision Blocks & Context:[/b]
-• Each scenario starts with [b]1–2 Story Cards[/b] describing the situation, location, and background. Swipe left/right or click NEXT/PREV to read.
-• The final card of each block is the [b]Decision Card[/b].
+[b]Animations & Visual Feedback:[/b]
+• Resource increases trigger a [color=yellow]Yellow Glow[/color]!
+• Resource decreases trigger a [color=deep_sky_blue]Blue Glow[/color]!
 
-[b]Knowing Actions & Affected Indicators:[/b]
-• On the Decision Card, available actions (e.g., 'Pass Tax Reform') and their affected indicator icons are clearly listed [u]before[/u] you swipe.
-• Left/Right choices are always available. Up/Down choices appear when extra decisions exist!
-• As you drag, top glowing markers highlight affected indicators without revealing delta values or direction.
-
-[b]Time Tracking:[/b]
-• Each decision block advances time by [b]6 hours to 3 days (72h)[/b].
-• Score is tracked and displayed in Days and Hours."
+[b]Insights & Shop Power-Ups:[/b]
+• [b]Default:[/b] Drag preview shows affected indicator icons.
+• [b]Small Insight:[/b] Displays value change ranges (e.g., +5..15, -10..20).
+• [b]Exact Insight:[/b] Displays EXACT delta numbers (e.g., +15, -10).
+• [b]Timed Insights:[/b] Active for 3 Decision Blocks!
+• Buy Insights in the Shop using persistent [color=gold]Gold Currency[/color] earned from surviving!"
 
 [node name="CloseBtn" type="Button" parent="HowToPlayModal/Panel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 45)

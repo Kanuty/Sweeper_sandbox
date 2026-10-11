@@ -23,25 +23,53 @@ signal indicator_failed(indicator_index, value, is_max)
 	$MarginContainer/HBoxContainer/Indicator3/VBoxContainer/AffectDot
 ]
 
+@onready var indicator_panels = [
+	$MarginContainer/HBoxContainer/Indicator0,
+	$MarginContainer/HBoxContainer/Indicator1,
+	$MarginContainer/HBoxContainer/Indicator2,
+	$MarginContainer/HBoxContainer/Indicator3
+]
+
 var values = [50.0, 50.0, 50.0, 50.0]
 
 func set_indicators(new_values: Array):
 	values = new_values.duplicate()
-	update_display()
+	update_display_immediate()
 
-func update_display():
+func update_display_immediate():
 	for i in range(4):
 		if i < indicator_bars.size() and i < values.size():
 			var val = clamp(values[i], 0.0, 100.0)
 			indicator_bars[i].value = val
 			indicator_labels[i].text = str(int(round(val)))
 
-func highlight_affected(affected_indices: Array):
+func highlight_affected(affected_indices: Array, deltas: Array = [], insight_mode: String = ""):
 	for i in range(4):
 		if i < affect_dots.size():
 			if i in affected_indices:
-				affect_dots[i].modulate = Color(1.0, 0.85, 0.2, 1.0) # Active indicator dot
-				affect_dots[i].visible = true
+				var dot = affect_dots[i]
+				dot.visible = true
+
+				var d = 0
+				if i < deltas.size():
+					d = deltas[i]
+
+				if insight_mode in ["exact_insight", "timed_exact_insight"]:
+					dot.text = ("▲ +" if d >= 0 else "▼ ") + str(d)
+					dot.modulate = Color(0.2, 1.0, 0.4) if d >= 0 else Color(0.3, 0.7, 1.0)
+				elif insight_mode in ["small_insight", "timed_small_insight"]:
+					var range_str = ""
+					if d > 0:
+						range_str = "+5..15" if d <= 15 else "+15..30"
+					elif d < 0:
+						range_str = "-5..15" if d >= -15 else "-15..30"
+					else:
+						range_str = "0"
+					dot.text = "▲ " + range_str
+					dot.modulate = Color(1.0, 0.85, 0.2)
+				else:
+					dot.text = "▲ AFFECTED"
+					dot.modulate = Color(1.0, 0.85, 0.2, 1.0)
 			else:
 				affect_dots[i].visible = false
 
@@ -58,17 +86,42 @@ func apply_deltas(deltas: Array) -> Dictionary:
 	}
 
 	for i in range(min(4, deltas.size())):
-		values[i] = clamp(values[i] + deltas[i], 0.0, 100.0)
-		if values[i] <= 0.0:
+		var old_val = values[i]
+		var delta = deltas[i]
+		var new_val = clamp(old_val + delta, 0.0, 100.0)
+		values[i] = new_val
+
+		# Animate bar value over 0.5s
+		var bar = indicator_bars[i]
+		var lbl = indicator_labels[i]
+		var panel = indicator_panels[i]
+
+		var tween = create_tween().set_parallel(true)
+		tween.tween_property(bar, "value", new_val, 0.5).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+
+		# Glow animation: Yellow flash for increase, Blue flash for decrease
+		if delta > 0:
+			# Yellow glow
+			var glow_tween = create_tween()
+			glow_tween.tween_property(panel, "modulate", Color(1.5, 1.4, 0.4, 1.0), 0.15)
+			glow_tween.tween_property(panel, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.35)
+		elif delta < 0:
+			# Blue glow
+			var glow_tween = create_tween()
+			glow_tween.tween_property(panel, "modulate", Color(0.4, 0.8, 1.8, 1.0), 0.15)
+			glow_tween.tween_property(panel, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.35)
+
+		lbl.text = str(int(round(new_val)))
+
+		if new_val <= 0.0:
 			result["game_over"] = true
 			result["failed_index"] = i
-			result["value"] = values[i]
+			result["value"] = new_val
 			result["is_max"] = false
-		elif values[i] >= 100.0:
+		elif new_val >= 100.0:
 			result["game_over"] = true
 			result["failed_index"] = i
-			result["value"] = values[i]
+			result["value"] = new_val
 			result["is_max"] = true
 
-	update_display()
 	return result
