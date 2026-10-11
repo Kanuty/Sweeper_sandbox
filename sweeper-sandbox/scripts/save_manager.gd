@@ -4,18 +4,29 @@ const SAVE_PATH = "user://savegame.json"
 
 var current_save_data = {
 	"has_active_game": false,
+	"player_name": "Hibernatus",
 	"hours_survived": 0,
 	"survival_points": 0,
 	"indicators": [50.0, 50.0, 50.0, 50.0],
 	"used_block_ids": [],
 	"active_block_id": "",
 	"active_card_index": 0,
-	"gold_coins": 0, # Persistent Gold balance starting at 0
+	"gold_coins": 0,
 	"inventory": [],
 	"active_protections": [],
 	"active_modifier": "",
 	"modifier_block_charges": 0,
-	"install_cooldown": 0
+	"install_cooldown": 0,
+	"high_scores": [], # Array of dicts: [{"name": "Hibernatus", "hours": 360, "points": 450, "date": "..."}]
+	"unlocked_achievements": [] # Array of achievement IDs: ["ach_7_days", ...]
+}
+
+const ACHIEVEMENTS = {
+	"ach_7_days": {"title": "7 Days Survivor", "desc": "Survive for at least 7 Days (168 Hours)."},
+	"ach_14_days": {"title": "14 Days Survivor", "desc": "Survive for at least 14 Days (336 Hours)."},
+	"ach_30_days": {"title": "30 Days Survivor", "desc": "Survive for at least 30 Days (720 Hours)."},
+	"ach_protection_saved": {"title": "Saved by Grace", "desc": "Survive a fatal decision using a Protection Shield."},
+	"ach_insight_death": {"title": "Foresight Doom", "desc": "Suffer a game over while an Insight modifier is active."}
 }
 
 func _ready():
@@ -46,6 +57,8 @@ func load_game():
 				current_save_data = data
 				if not current_save_data.has("gold_coins"):
 					current_save_data["gold_coins"] = 0
+				if not current_save_data.has("player_name"):
+					current_save_data["player_name"] = "Hibernatus"
 				if not current_save_data.has("survival_points"):
 					current_save_data["survival_points"] = 0
 				if not current_save_data.has("inventory"):
@@ -54,12 +67,19 @@ func load_game():
 					current_save_data["active_protections"] = []
 				if not current_save_data.has("install_cooldown"):
 					current_save_data["install_cooldown"] = 0
+				if not current_save_data.has("high_scores"):
+					current_save_data["high_scores"] = []
+				if not current_save_data.has("unlocked_achievements"):
+					current_save_data["unlocked_achievements"] = []
 
-func start_new_game(default_indicators = [50.0, 50.0, 50.0, 50.0]):
+func start_new_game(name_input: String = "Hibernatus", default_indicators = [50.0, 50.0, 50.0, 50.0]):
 	var current_gold = current_save_data.get("gold_coins", 0)
+	var scores = current_save_data.get("high_scores", []).duplicate()
+	var achs = current_save_data.get("unlocked_achievements", []).duplicate()
 
 	current_save_data = {
 		"has_active_game": true,
+		"player_name": name_input.strip_edges() if name_input.strip_edges() != "" else "Hibernatus",
 		"hours_survived": 0,
 		"survival_points": 0,
 		"indicators": default_indicators.duplicate(),
@@ -67,13 +87,44 @@ func start_new_game(default_indicators = [50.0, 50.0, 50.0, 50.0]):
 		"active_block_id": "",
 		"active_card_index": 0,
 		"gold_coins": current_gold,
-		"inventory": [], # Clear unused inventory on new run
-		"active_protections": [], # Clear active protections on new run
-		"active_modifier": "", # Clear active insight modifier on new run
+		"inventory": [],
+		"active_protections": [],
+		"active_modifier": "",
 		"modifier_block_charges": 0,
-		"install_cooldown": 0
+		"install_cooldown": 0,
+		"high_scores": scores,
+		"unlocked_achievements": achs
 	}
 	save_game()
+
+func record_high_score(p_name: String, hours: int, points: int):
+	var scores = current_save_data.get("high_scores", [])
+	scores.append({
+		"name": p_name,
+		"hours": hours,
+		"points": points
+	})
+
+	# Sort high scores descending by points/hours
+	scores.sort_custom(func(a, b):
+		if a["points"] == b["points"]:
+			return a["hours"] > b["hours"]
+		return a["points"] > b["points"]
+	)
+
+	# Keep top 10
+	if scores.size() > 10:
+		scores.resize(10)
+
+	current_save_data["high_scores"] = scores
+	save_game()
+
+func unlock_achievement(ach_id: String):
+	var unlocked = current_save_data.get("unlocked_achievements", [])
+	if not ach_id in unlocked:
+		unlocked.append(ach_id)
+		current_save_data["unlocked_achievements"] = unlocked
+		save_game()
 
 func add_gold(amount: int):
 	var gold = current_save_data.get("gold_coins", 0)
@@ -89,8 +140,6 @@ func add_survival_points(pts: int):
 
 func calculate_non_linear_gold(pts: int, hours: int) -> int:
 	var days = hours / 24.0
-	# Rebalanced curve: surviving ~15 days gives ~35-45 Gold Coins
-	# Slight linear-progressive growth: 1 gold per 10 survival points * (1.0 + days * 0.02)
 	var multiplier = 1.0 + (days * 0.02)
 	var base_gold = (pts / 10.0) * multiplier
 	var total_gold = int(round(base_gold))
@@ -166,10 +215,12 @@ func remove_protection_and_set_cooldown(index: int, cooldown_decisions: int):
 
 func clear_save():
 	var gold = current_save_data.get("gold_coins", 0)
+	var scores = current_save_data.get("high_scores", [])
+	var achs = current_save_data.get("unlocked_achievements", [])
 
-	# Insights & protections reset after game is finished
 	current_save_data = {
 		"has_active_game": false,
+		"player_name": "Hibernatus",
 		"hours_survived": 0,
 		"survival_points": 0,
 		"indicators": [50.0, 50.0, 50.0, 50.0],
@@ -181,7 +232,9 @@ func clear_save():
 		"active_protections": [],
 		"active_modifier": "",
 		"modifier_block_charges": 0,
-		"install_cooldown": 0
+		"install_cooldown": 0,
+		"high_scores": scores,
+		"unlocked_achievements": achs
 	}
 	if FileAccess.file_exists(SAVE_PATH):
 		DirAccess.remove_absolute(SAVE_PATH)

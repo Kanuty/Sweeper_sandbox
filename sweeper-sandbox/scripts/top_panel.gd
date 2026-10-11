@@ -63,11 +63,16 @@ func update_protection_shields():
 			shield_labels[ind].visible = true
 
 func update_display_immediate():
+	var active_mod = SaveManager.current_save_data.get("active_modifier", "")
 	for i in range(4):
 		if i < indicator_bars.size() and i < values.size():
 			var val = clamp(values[i], 0.0, 100.0)
 			indicator_bars[i].value = val
-			indicator_labels[i].text = str(int(round(val)))
+			if active_mod in ["exact_insight", "small_insight", "timed_exact_insight", "timed_small_insight"]:
+				indicator_labels[i].text = str(int(round(val)))
+				indicator_labels[i].visible = true
+			else:
+				indicator_labels[i].visible = false # Hide numbers by default for vague meter
 
 func highlight_affected(affected_indices: Array, deltas: Array = [], insight_mode: String = ""):
 	for i in range(4):
@@ -111,6 +116,7 @@ func apply_deltas(deltas: Array) -> Dictionary:
 	}
 
 	var active_prots = SaveManager.current_save_data.get("active_protections", []).duplicate()
+	var active_mod = SaveManager.current_save_data.get("active_modifier", "")
 
 	for i in range(min(4, deltas.size())):
 		var old_val = values[i]
@@ -121,7 +127,6 @@ func apply_deltas(deltas: Array) -> Dictionary:
 
 		var protected = false
 		if is_min_fail or is_max_fail:
-			# Check if active protection shields this indicator
 			for p_idx in range(active_prots.size() - 1, -1, -1):
 				var p = active_prots[p_idx]
 				if p.get("indicator", -1) == i:
@@ -130,10 +135,8 @@ func apply_deltas(deltas: Array) -> Dictionary:
 						protected = true
 						result["protection_triggered"] = true
 
-						# Clamp safely to 15 or 85 instead of losing
 						raw_new_val = 15.0 if is_min_fail else 85.0
 
-						# Remove shield and trigger install cooldown (5 for small, 7 for big)
 						var cd = 5 if p.get("type", "") == "small" else 7
 						SaveManager.remove_protection_and_set_cooldown(p_idx, cd)
 						break
@@ -141,7 +144,6 @@ func apply_deltas(deltas: Array) -> Dictionary:
 		var new_val = clamp(raw_new_val, 0.0, 100.0)
 		values[i] = new_val
 
-		# Animate bar value over 0.5s
 		var bar = indicator_bars[i]
 		var lbl = indicator_labels[i]
 		var panel = indicator_panels[i]
@@ -159,6 +161,7 @@ func apply_deltas(deltas: Array) -> Dictionary:
 			glow_tween.tween_property(panel, "modulate", Color(1.0, 1.0, 1.0, 1.0), 0.35)
 
 		lbl.text = str(int(round(new_val)))
+		lbl.visible = (active_mod in ["exact_insight", "small_insight", "timed_exact_insight", "timed_small_insight"])
 
 		if not protected:
 			if new_val <= 0.0:

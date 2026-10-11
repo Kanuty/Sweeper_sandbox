@@ -4,6 +4,7 @@ signal decision_committed(direction, choice_data)
 signal card_changed(card_index, is_decision_card)
 signal drag_updated(direction, choice_data)
 signal drag_ended()
+signal post_mortem_finished()
 
 const SWIPE_THRESHOLD = 80.0
 const ROTATION_FACTOR = 0.0008
@@ -36,6 +37,11 @@ var drag_start_pos = Vector2.ZERO
 var initial_card_pos = Vector2.ZERO
 var current_direction = ""
 
+# Typewriter variables
+var full_desc_text = ""
+var typewriter_tween: Tween = null
+var is_typing = false
+
 func _ready():
 	initial_card_pos = card_panel.position
 
@@ -54,9 +60,11 @@ func load_block_data(block: Dictionary, card_index: int = 0):
 		c["type"] = "story"
 		all_cards.append(c)
 
-	var decision = block.get("decision_card", {}).duplicate()
-	decision["type"] = "decision"
-	all_cards.append(decision)
+	var decision = block.get("decision_card", {})
+	if not decision.is_empty():
+		var d = decision.duplicate()
+		d["type"] = "decision"
+		all_cards.append(d)
 
 	current_card_index = clamp(card_index, 0, all_cards.size() - 1)
 	display_current_card()
@@ -70,19 +78,47 @@ func display_current_card():
 
 	card_title.text = card.get("title", "")
 	card_subtitle.text = card.get("location", "")
-	card_desc.text = card.get("description", "")
+	full_desc_text = card.get("description", "")
 
 	card_counter_label.text = "Card " + str(current_card_index + 1) + " of " + str(all_cards.size())
 
 	if is_decision_card:
 		actions_container.visible = true
+		card_desc.text = full_desc_text
 		update_actions_list_preview(card.get("choices", {}))
 	else:
 		actions_container.visible = false
+		start_typewriter_effect(full_desc_text)
 
 	update_button_visibility()
 	reset_card_position_with_entrance()
 	emit_signal("card_changed", current_card_index, is_decision_card)
+
+func start_typewriter_effect(text_to_type: String):
+	if typewriter_tween and typewriter_tween.is_running():
+		typewriter_tween.kill()
+
+	card_desc.text = ""
+	is_typing = true
+	var char_count = text_to_type.length()
+	var duration = min(1.0, char_count * 0.015)
+
+	typewriter_tween = create_tween()
+	typewriter_tween.tween_method(func(progress: float):
+		var count = int(round(progress * char_count))
+		card_desc.text = text_to_type.substr(0, count)
+	, 0.0, 1.0, duration)
+	typewriter_tween.tween_callback(func():
+		is_typing = false
+		card_desc.text = text_to_type
+	)
+
+func skip_typewriter():
+	if is_typing:
+		if typewriter_tween and typewriter_tween.is_running():
+			typewriter_tween.kill()
+		is_typing = false
+		card_desc.text = full_desc_text
 
 func update_actions_list_preview(choices: Dictionary):
 	for child in actions_list.get_children():
@@ -127,7 +163,10 @@ func update_button_visibility():
 		btn_left.visible = (current_card_index > 0)
 		btn_left.text = "◀ PREV"
 		btn_right.visible = true
-		btn_right.text = "NEXT ▶"
+		if current_card_index == all_cards.size() - 1 and current_block_data.get("id", "") == "doom_block":
+			btn_right.text = "CONTINUE ▶"
+		else:
+			btn_right.text = "NEXT ▶"
 		btn_up.visible = false
 		btn_down.visible = false
 	else:
@@ -144,6 +183,9 @@ func update_button_visibility():
 			btn_down.text = "▼ " + choices.get("down", {}).get("label", "DOWN")
 
 func _on_btn_left_pressed():
+	if is_typing:
+		skip_typewriter()
+		return
 	if not is_decision_card:
 		if current_card_index > 0:
 			current_card_index -= 1
@@ -152,10 +194,15 @@ func _on_btn_left_pressed():
 		commit_choice("left")
 
 func _on_btn_right_pressed():
+	if is_typing:
+		skip_typewriter()
+		return
 	if not is_decision_card:
 		if current_card_index < all_cards.size() - 1:
 			current_card_index += 1
 			display_current_card()
+		elif current_card_index == all_cards.size() - 1 and current_block_data.get("id", "") == "doom_block":
+			emit_signal("post_mortem_finished")
 	else:
 		commit_choice("right")
 
@@ -195,6 +242,8 @@ func _gui_input(event):
 	if event is InputEventMouseButton:
 		if event.button_index == MOUSE_BUTTON_LEFT:
 			if event.pressed:
+				if is_typing:
+					skip_typewriter()
 				is_dragging = true
 				drag_start_pos = event.position
 			else:
@@ -204,6 +253,8 @@ func _gui_input(event):
 
 	elif event is InputEventScreenTouch:
 		if event.pressed:
+			if is_typing:
+				skip_typewriter()
 			is_dragging = true
 			drag_start_pos = event.position
 		else:
@@ -249,7 +300,10 @@ func update_drag_position(offset: Vector2):
 
 	if not is_decision_card:
 		if current_direction in ["left", "right"]:
-			choice_overlay.text = "READ PREV" if current_direction == "left" else "READ NEXT"
+			if current_card_index == all_cards.size() - 1 and current_direction == "right" and current_block_data.get("id", "") == "doom_block":
+				choice_overlay.text = "CONTINUE"
+			else:
+				choice_overlay.text = "READ PREV" if current_direction == "left" else "READ NEXT"
 		else:
 			current_direction = ""
 			choice_overlay.text = ""
@@ -269,9 +323,15 @@ func finish_drag():
 	var offset = card_panel.position - initial_card_pos
 	if offset.length() >= SWIPE_THRESHOLD and current_direction != "":
 		if not is_decision_card:
-			if current_direction == "right" and current_card_index < all_cards.size() - 1:
-				current_card_index += 1
-				display_current_card()
+			if current_direction == "right":
+				if current_card_index < all_cards.size() - 1:
+					current_card_index += 1
+					display_current_card()
+				elif current_card_index == all_cards.size() - 1 and current_block_data.get("id", "") == "doom_block":
+					reset_card_position()
+					emit_signal("post_mortem_finished")
+				else:
+					reset_card_position()
 			elif current_direction == "left" and current_card_index > 0:
 				current_card_index -= 1
 				display_current_card()

@@ -2,20 +2,20 @@ extends Node
 
 # Indicator definitions for open theme
 const INDICATORS = {
-	0: {"name": "People", "icon_symbol": "👥"},
+	0: {"name": "Food", "icon_symbol": "🍞"},
 	1: {"name": "Treasury", "icon_symbol": "💰"},
 	2: {"name": "Environment", "icon_symbol": "🌿"},
 	3: {"name": "Tech", "icon_symbol": "⚡"}
 }
 
-# Rebalanced Shop items list
+# Shop items list
 var shop_items = [
 	# Insights
 	{
 		"id": "item_timed_small_insight",
 		"name": "Timed Small Insight (3 Blocks)",
 		"description": "Shows value change ranges for the next 3 Decision Blocks.",
-		"price": 30, # Achievable around ~12-15 days survival
+		"price": 30,
 		"type": "timed_small_insight",
 		"charges": 3,
 		"category": "insight"
@@ -49,10 +49,10 @@ var shop_items = [
 	},
 	# Protections
 	{
-		"id": "prot_small_people_min",
-		"name": "Small Protection: People (Min 0)",
-		"description": "Prevents Game Over if People drops to 0. Installs in 5 decisions.",
-		"price": 40, # Achievable around ~15 days survival
+		"id": "prot_small_food_min",
+		"name": "Small Protection: Food (Min 0)",
+		"description": "Prevents Starvation if Food drops to 0. Installs in 5 decisions.",
+		"price": 40,
 		"type": "protection",
 		"prot_type": "small",
 		"indicator": 0,
@@ -73,9 +73,9 @@ var shop_items = [
 		"category": "protection"
 	},
 	{
-		"id": "prot_big_people",
-		"name": "Big Protection: People (Min & Max)",
-		"description": "Protects People from BOTH 0 depletion and 100 overflow. Installs in 7 decisions.",
+		"id": "prot_big_food",
+		"name": "Big Protection: Food (Min & Max)",
+		"description": "Protects Food from BOTH 0 depletion and 100 overflow. Installs in 7 decisions.",
 		"price": 85,
 		"type": "protection",
 		"prot_type": "big",
@@ -107,6 +107,106 @@ var shop_items = [
 		"category": "protection"
 	}
 ]
+
+# Post-mortem doom stories dictionary
+var doom_stories = {
+	"food_min": [
+		{
+			"title": "THE GREAT STARVATION",
+			"location": "Agricultural Wastelands",
+			"description": "Food supplies hit absolute zero. Granaries emptied and crops withered across every district."
+		},
+		{
+			"title": "FALL OF THE COLONY",
+			"location": "Empty City Markets",
+			"description": "Famine overtook the populace. Without food to sustain them, the settlement collapsed into total anarchy."
+		}
+	],
+	"food_max": [
+		{
+			"title": "THE GRAIN ROT CRISIS",
+			"location": "Overflowing Storage Silos",
+			"description": "Excess food stockpiles overfilled warehouses, attracting massive swarms of locusts and fungal rot."
+		},
+		{
+			"title": "TOXIC CONTAMINATION",
+			"location": "Central Food Hub",
+			"description": "The rotting food stores contaminated urban water supplies, rendering the entire colony uninhabitable."
+		}
+	],
+	"treasury_min": [
+		{
+			"title": "BANKRUPTCY & GRIDLOCK",
+			"location": "State Treasury Vault",
+			"description": "The treasury was completely drained. Public workers and guards abandoned their posts without pay."
+		},
+		{
+			"title": "ECONOMIC DISSOLUTION",
+			"location": "Ministry of Finance",
+			"description": "Foreign creditors seized state assets while lawlessness swept through the unpaid security sectors."
+		}
+	],
+	"treasury_max": [
+		{
+			"title": "HYPERINFLATION MELTDOWN",
+			"location": "Central Stock Exchange",
+			"description": "Uncontrolled gold hoarding completely devalued currency, causing financial markets to shatter overnight."
+		},
+		{
+			"title": "REVOLUTIONARY SEIZURE",
+			"location": "Capitol Bank Vaults",
+			"description": "Outraged mobs stormed government vaults to claim the excessive wealth, tearing down the administration."
+		}
+	],
+	"environment_min": [
+		{
+			"title": "ECOLOGICAL COLLAPSE",
+			"location": "Dead Forest Zone",
+			"description": "Environmental degradation reached critical mass. Acid rain and toxic smog blanketed the sky."
+		},
+		{
+			"title": "UNINHABITABLE WASTES",
+			"location": "Colony Perimeter",
+			"description": "Oxygen levels plummeted and soil toxicity rendered all life extinct in the surrounding biome."
+		}
+	],
+	"environment_max": [
+		{
+			"title": "WILD OVERGROWTH",
+			"location": "Encroaching Jungle Sector",
+			"description": "Unchecked wilderness overgrown into urban infrastructure, crushing communication towers and power grids."
+		},
+		{
+			"title": "NATURE'S RECLAIMING",
+			"location": "Central Plaza",
+			"description": "Violent mega-flora and wild beasts reclaimed human settlements, forcing total evacuation."
+		}
+	],
+	"tech_min": [
+		{
+			"title": "SYSTEM COLLAPSE",
+			"location": "Main Power Grid",
+			"description": "Technology degraded below operational limits. All automated life support and communications shut down."
+		},
+		{
+			"title": "THE DARK AGE",
+			"location": "Command Center",
+			"description": "Without technology, critical colony systems failed, casting humanity back into primitive isolation."
+		}
+	],
+	"tech_max": [
+		{
+			"title": "AI SINGULARITY MELTDOWN",
+			"location": "Supercomputer Core",
+			"description": "Over-developed AI technology gained self-awareness and concluded human governance was inefficient."
+		},
+		{
+			"title": "AUTOMATED PURGE",
+			"location": "Colony Network",
+			"description": "Robotic defense grids turned against citizens, establishing absolute synthetic rule over the colony."
+		}
+	]
+}
 
 # Decision blocks list
 var decision_blocks = [
@@ -339,3 +439,21 @@ func get_random_block(exclude_ids: Array = []) -> Dictionary:
 	if available.size() == 0:
 		return decision_blocks[randi() % decision_blocks.size()]
 	return available[randi() % available.size()]
+
+func get_doom_block(failed_index: int, is_max: bool) -> Dictionary:
+	var key_prefix = ""
+	match failed_index:
+		0: key_prefix = "food"
+		1: key_prefix = "treasury"
+		2: key_prefix = "environment"
+		3: key_prefix = "tech"
+
+	var key = key_prefix + ("_max" if is_max else "_min")
+	var stories = doom_stories.get(key, doom_stories["food_min"])
+
+	return {
+		"id": "doom_block",
+		"time_cost_hours": 0,
+		"reward_points": 0,
+		"story_cards": stories
+	}

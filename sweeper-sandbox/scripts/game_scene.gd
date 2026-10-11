@@ -27,6 +27,10 @@ var hours_survived = 0
 var survival_points = 0
 var current_block = {}
 
+# Post-mortem state
+var is_in_post_mortem = false
+var pending_game_over_result = {}
+
 func _ready():
 	menu_btn.pressed.connect(_on_menu_pressed)
 	shop_btn.pressed.connect(_on_shop_pressed)
@@ -44,9 +48,15 @@ func _ready():
 	card_swiper.drag_ended.connect(_on_drag_ended)
 	card_swiper.decision_committed.connect(_on_decision_committed)
 
+	if card_swiper.has_signal("post_mortem_finished"):
+		card_swiper.post_mortem_finished.connect(_on_post_mortem_finished)
+
 	init_game()
 
 func init_game():
+	is_in_post_mortem = false
+	pending_game_over_result = {}
+
 	var save = SaveManager.current_save_data
 	hours_survived = save.get("hours_survived", 0)
 	survival_points = save.get("survival_points", 0)
@@ -88,10 +98,15 @@ func load_next_block():
 	card_swiper.load_block_data(current_block, 0)
 
 func _on_card_changed(card_index: int, _is_decision_card: bool):
+	if is_in_post_mortem:
+		return
+
 	SaveManager.current_save_data["active_card_index"] = card_index
 	SaveManager.save_game()
 
 func _on_drag_updated(_direction: String, choice_data: Dictionary):
+	if is_in_post_mortem:
+		return
 	var affected = choice_data.get("affected", [])
 	var deltas = choice_data.get("deltas", [])
 	var active_mod = SaveManager.current_save_data.get("active_modifier", "")
@@ -101,6 +116,10 @@ func _on_drag_ended():
 	top_panel.clear_highlights()
 
 func _on_decision_committed(_direction: String, choice_data: Dictionary):
+	if is_in_post_mortem:
+		show_final_game_over_summary()
+		return
+
 	top_panel.clear_highlights()
 
 	var deltas = choice_data.get("deltas", [0, 0, 0, 0])
@@ -113,6 +132,17 @@ func _on_decision_committed(_direction: String, choice_data: Dictionary):
 	survival_points += pts_earned
 
 	show_points_popup(pts_earned)
+
+	# Check achievements
+	var days = hours_survived / 24
+	if days >= 7:
+		SaveManager.unlock_achievement("ach_7_days")
+	if days >= 14:
+		SaveManager.unlock_achievement("ach_14_days")
+	if days >= 30:
+		SaveManager.unlock_achievement("ach_30_days")
+	if result.get("protection_triggered", false):
+		SaveManager.unlock_achievement("ach_protection_saved")
 
 	SaveManager.consume_modifier_charge()
 	SaveManager.add_survival_points(pts_earned)
@@ -130,42 +160,61 @@ func _on_decision_committed(_direction: String, choice_data: Dictionary):
 	SaveManager.save_game()
 
 	if result.get("game_over", false):
-		handle_game_over(result)
+		start_post_mortem_sequence(result)
 	else:
 		load_next_block()
 
-func show_points_popup(pts: int):
-	score_popup.text = "+" + str(pts) + " Survival Points!"
-	score_popup.position = Vector2(100, 180)
-	score_popup.modulate = Color(1.0, 0.85, 0.2, 1.0)
-	score_popup.visible = true
+func start_post_mortem_sequence(result: Dictionary):
+	is_in_post_mortem = true
+	pending_game_over_result = result
 
-	var tween = create_tween().set_parallel(true)
-	tween.tween_property(score_popup, "position", Vector2(100, 140), 0.8).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
-	tween.tween_property(score_popup, "modulate", Color(1.0, 0.85, 0.2, 0.0), 0.8)
+	var active_mod = SaveManager.current_save_data.get("active_modifier", "")
+	if active_mod != "":
+		SaveManager.unlock_achievement("ach_insight_death")
 
-func handle_game_over(result: Dictionary):
-	var idx = result.get("failed_index", 0)
+	var failed_idx = result.get("failed_index", 0)
 	var is_max = result.get("is_max", false)
-	var ind_info = CardDatabase.INDICATORS.get(idx, {"name": "Resource"})
+	var doom_block = CardDatabase.get_doom_block(failed_idx, is_max)
+
+	card_swiper.load_block_data(doom_block, 0)
+
+func _on_post_mortem_finished():
+	show_final_game_over_summary()
+
+func show_final_game_over_summary():
+	var failed_idx = pending_game_over_result.get("failed_index", 0)
+	var is_max = pending_game_over_result.get("is_max", false)
+	var ind_info = CardDatabase.INDICATORS.get(failed_idx, {"name": "Resource"})
 	var ind_name = ind_info.get("name", "Resource")
 
 	var reason_text = ""
 	if is_max:
-		reason_text = "OVERFLOW! Your " + ind_name + " reached maximum capacity (100)!"
+		reason_text = "OVERFLOW! " + ind_name + " reached maximum capacity!"
 	else:
-		reason_text = "DEPLETED! Your " + ind_name + " dropped to zero (0)!"
+		reason_text = "DEPLETED! " + ind_name + " dropped to zero!"
 
-	# Non-linear gold calculation from survival points & hours
+	var player_name = SaveManager.current_save_data.get("player_name", "Hibernatus")
 	var gold_earned = SaveManager.calculate_non_linear_gold(survival_points, hours_survived)
+
+	SaveManager.record_high_score(player_name, hours_survived, survival_points)
 	SaveManager.add_gold(gold_earned)
 
 	game_over_reason.text = reason_text
-	game_over_stats.text = "Survived: " + SaveManager.format_time_survived(hours_survived) + " (" + str(survival_points) + " Pts)"
+	game_over_stats.text = player_name + " survived: " + SaveManager.format_time_survived(hours_survived) + " (" + str(survival_points) + " Pts)"
 	gold_earned_label.text = "💰 Converted to +" + str(gold_earned) + " Gold Coins!"
 
 	SaveManager.clear_save()
 	game_over_modal.visible = true
+
+func show_points_popup(pts: int):
+	score_popup.text = "+" + str(pts) + " Survival Points!"
+	score_popup.position = Vector2(100, 135)
+	score_popup.modulate = Color(1.0, 0.85, 0.2, 1.0)
+	score_popup.visible = true
+
+	var tween = create_tween().set_parallel(true)
+	tween.tween_property(score_popup, "position", Vector2(100, 105), 0.8).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
+	tween.tween_property(score_popup, "modulate", Color(1.0, 0.85, 0.2, 0.0), 0.8)
 
 func _on_shop_pressed():
 	shop_modal.visible = true
@@ -194,7 +243,7 @@ func update_equipment_modal_ui():
 		var lbl = Label.new()
 		lbl.text = "No bought protections in inventory. Visit the Shop to purchase shields!"
 		lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		lbl.add_theme_font_size_override("font_size", 13)
+		lbl.add_theme_font_size_override("font_size", 12)
 		inventory_list.add_child(lbl)
 		return
 
@@ -213,7 +262,7 @@ func update_equipment_modal_ui():
 
 		var name_lbl = Label.new()
 		name_lbl.text = item_info["name"]
-		name_lbl.add_theme_font_size_override("font_size", 14)
+		name_lbl.add_theme_font_size_override("font_size", 13)
 		name_lbl.add_theme_color_override("font_color", Color(0.3, 0.9, 1.0))
 		vbox.add_child(name_lbl)
 
@@ -224,7 +273,7 @@ func update_equipment_modal_ui():
 				break
 
 		var equip_btn = Button.new()
-		equip_btn.custom_minimum_size = Vector2(0, 36)
+		equip_btn.custom_minimum_size = Vector2(0, 34)
 
 		if is_equipped:
 			equip_btn.disabled = true
