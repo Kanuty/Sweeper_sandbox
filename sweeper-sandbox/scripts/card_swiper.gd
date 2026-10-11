@@ -2,6 +2,8 @@ extends Control
 
 signal decision_committed(direction, choice_data)
 signal card_changed(index, is_decision_card)
+signal drag_updated(direction, choice_data)
+signal drag_ended()
 
 @onready var card_panel = $CardPanel
 @onready var card_title = $CardPanel/VBoxContainer/TitleLabel
@@ -140,6 +142,10 @@ func update_decision_options(choices: Dictionary):
 
 			var dir_capture = dir
 			var choice_capture = choice
+
+			btn.mouse_entered.connect(func(): emit_signal("drag_updated", dir_capture, choice_capture))
+			btn.mouse_exited.connect(func(): emit_signal("drag_ended"))
+
 			btn.pressed.connect(func(): commit_choice(dir_capture, choice_capture))
 
 			choices_list.add_child(btn)
@@ -176,6 +182,7 @@ func commit_choice(direction: String, choice_data: Dictionary):
 	if not is_decision_card:
 		return
 
+	emit_signal("drag_ended")
 	var tween = create_tween()
 	tween.tween_property(card_panel, "modulate:a", 0.0, 0.2)
 	tween.tween_callback(func():
