@@ -1,7 +1,53 @@
-[gd_scene load_steps=3 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/main_menu.gd" id="1_main_menu"]
 [ext_resource type="PackedScene" path="res://scenes/shop.tscn" id="2_shop"]
+[ext_resource type="Texture2D" path="res://assets/ui/transport_bar.png" id="3_transport_bar"]
+[ext_resource type="Texture2D" path="res://assets/ui/button_orange.png" id="4_btn_orange"]
+[ext_resource type="Texture2D" path="res://assets/ui/button_red.png" id="5_btn_red"]
+[ext_resource type="Texture2D" path="res://assets/ui/panel_chassis.png" id="6_chassis"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_play.png" id="7_icon_play"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_save.png" id="8_icon_save"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_open_folder.png" id="9_icon_folder"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_settings.png" id="10_icon_settings"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_close.png" id="11_icon_close"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_orange"]
+texture = ExtResource("4_btn_orange")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_orange_pressed"]
+texture = ExtResource("4_btn_orange")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+modulate_color = Color(0.8, 0.8, 0.8, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_red"]
+texture = ExtResource("5_btn_red")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_red_pressed"]
+texture = ExtResource("5_btn_red")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+modulate_color = Color(0.8, 0.8, 0.8, 1)
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_chassis"]
+texture = ExtResource("6_chassis")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
 
 [node name="MainMenu" type="Control"]
 layout_mode = 3
@@ -28,89 +74,151 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 30
-theme_override_constants/margin_top = 30
-theme_override_constants/margin_right = 30
-theme_override_constants/margin_bottom = 30
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
 layout_mode = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-[node name="HeaderContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
+[node name="HeaderContainer" type="NinePatchRect" parent="MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(0, 100)
 layout_mode = 2
-theme_override_constants/separation = 6
+texture = ExtResource("3_transport_bar")
+patch_margin_left = 16
+patch_margin_top = 16
+patch_margin_right = 16
+patch_margin_bottom = 16
 
-[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
+[node name="HeaderVBox" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HeaderContainer"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 10.0
+offset_top = 10.0
+offset_right = -10.0
+offset_bottom = -10.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 4
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer/HeaderVBox"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 22
 text = "HIBERNATUS SURVIVAL"
 horizontal_alignment = 1
 
-[node name="SubtitleLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
+[node name="SubtitleLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer/HeaderVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.701961, 0.74902, 0.823529, 1)
-theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.75, 0.82, 0.9, 1)
+theme_override_font_sizes/font_size = 12
 text = "Awaken from Slumber into the Wasteland"
 horizontal_alignment = 1
 
-[node name="GoldLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer"]
+[node name="GoldLabel" type="Label" parent="MarginContainer/VBoxContainer/HeaderContainer/HeaderVBox"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 15
+theme_override_colors/font_color = Color(1, 0.88, 0.25, 1)
+theme_override_font_sizes/font_size = 13
 text = "💰 Scrap Gold: 100"
 horizontal_alignment = 1
 
 [node name="Spacer" type="Control" parent="MarginContainer/VBoxContainer"]
-custom_minimum_size = Vector2(0, 10)
+custom_minimum_size = Vector2(0, 6)
 layout_mode = 2
 
 [node name="ButtonsContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_constants/separation = 10
+theme_override_constants/separation = 8
 
 [node name="NewGameBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "NEW GAME"
+theme_override_colors/font_color = Color(0.12, 0.08, 0.04, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_orange_pressed")
+text = "  NEW GAME"
+icon = ExtResource("7_icon_play")
+expand_icon = true
 
 [node name="ContinueBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
 custom_minimum_size = Vector2(0, 46)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "CONTINUE GAME"
+theme_override_colors/font_color = Color(0.12, 0.08, 0.04, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_orange_pressed")
+text = "  CONTINUE GAME"
+icon = ExtResource("8_icon_save")
+expand_icon = true
 
 [node name="LeaderboardBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "🏆 HIGH SCORES"
+theme_override_colors/font_color = Color(0.12, 0.08, 0.04, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_orange_pressed")
+text = "  HIGH SCORES"
+icon = ExtResource("9_icon_folder")
+expand_icon = true
 
 [node name="AchievementsBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "⭐ ACHIEVEMENTS"
+theme_override_colors/font_color = Color(0.12, 0.08, 0.04, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_orange_pressed")
+text = "  ACHIEVEMENTS"
+icon = ExtResource("9_icon_folder")
+expand_icon = true
 
 [node name="ShopBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "INSIGHT SHOP"
+theme_override_colors/font_color = Color(0.12, 0.08, 0.04, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_orange_pressed")
+text = "  INSIGHT SHOP"
+icon = ExtResource("10_icon_settings")
+expand_icon = true
 
 [node name="HowToPlayBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "HOW TO PLAY"
+theme_override_colors/font_color = Color(0.12, 0.08, 0.04, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_orange_pressed")
+text = "  HOW TO PLAY"
+icon = ExtResource("9_icon_folder")
+expand_icon = true
 
 [node name="ExitBtn" type="Button" parent="MarginContainer/VBoxContainer/ButtonsContainer"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
-text = "EXIT GAME"
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_red")
+theme_override_styles/hover = SubResource("StyleBoxTexture_btn_red")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_red_pressed")
+text = "  EXIT GAME"
+icon = ExtResource("11_icon_close")
+expand_icon = true
 
 [node name="ShopModal" parent="." instance=ExtResource("2_shop")]
 visible = false
@@ -139,6 +247,7 @@ offset_right = 160.0
 offset_bottom = 120.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_chassis")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="NameModal/Panel"]
 layout_mode = 1
@@ -156,6 +265,7 @@ alignment = 1
 
 [node name="Title" type="Label" parent="NameModal/Panel/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 18
 text = "ENTER HIBERNATUS NAME"
 horizontal_alignment = 1
@@ -169,12 +279,22 @@ alignment = 1
 [node name="StartGameBtn" type="Button" parent="NameModal/Panel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.12, 0.08, 0.04, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_orange")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_orange_pressed")
 text = "AWAKEN & SURVIVE"
+icon = ExtResource("7_icon_play")
+expand_icon = true
 
 [node name="CancelBtn" type="Button" parent="NameModal/Panel/VBoxContainer"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 36)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_red")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_red_pressed")
 text = "CANCEL"
+icon = ExtResource("11_icon_close")
+expand_icon = true
 
 [node name="LeaderboardModal" type="ColorRect" parent="."]
 visible = false
@@ -199,6 +319,7 @@ offset_right = 170.0
 offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_chassis")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="LeaderboardModal/Panel"]
 layout_mode = 1
@@ -215,6 +336,7 @@ theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="LeaderboardModal/Panel/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 20
 text = "🏆 HIGH SCORES"
 horizontal_alignment = 1
@@ -231,7 +353,12 @@ theme_override_constants/separation = 8
 [node name="CloseBtn" type="Button" parent="LeaderboardModal/Panel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_red")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_red_pressed")
 text = "CLOSE"
+icon = ExtResource("11_icon_close")
+expand_icon = true
 
 [node name="AchievementsModal" type="ColorRect" parent="."]
 visible = false
@@ -256,6 +383,7 @@ offset_right = 170.0
 offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_chassis")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="AchievementsModal/Panel"]
 layout_mode = 1
@@ -272,6 +400,7 @@ theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="AchievementsModal/Panel/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 20
 text = "⭐ ACHIEVEMENTS"
 horizontal_alignment = 1
@@ -288,7 +417,12 @@ theme_override_constants/separation = 8
 [node name="CloseBtn" type="Button" parent="AchievementsModal/Panel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_red")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_red_pressed")
 text = "CLOSE"
+icon = ExtResource("11_icon_close")
+expand_icon = true
 
 [node name="HowToPlayModal" type="ColorRect" parent="."]
 visible = false
@@ -313,6 +447,7 @@ offset_right = 170.0
 offset_bottom = 260.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_chassis")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="HowToPlayModal/Panel"]
 layout_mode = 1
@@ -329,6 +464,7 @@ theme_override_constants/separation = 12
 
 [node name="Title" type="Label" parent="HowToPlayModal/Panel/VBoxContainer"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 20
 text = "HOW TO PLAY"
 horizontal_alignment = 1
@@ -354,4 +490,9 @@ If you collapse, experience 2 cards showing how you met your doom before seeing 
 [node name="CloseBtn" type="Button" parent="HowToPlayModal/Panel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_red")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_red_pressed")
 text = "GOT IT!"
+icon = ExtResource("11_icon_close")
+expand_icon = true
