@@ -8,7 +8,7 @@ extends Control
 @onready var how_to_play_btn = $MarginContainer/VBoxContainer/ButtonsContainer/HowToPlayBtn
 @onready var exit_btn = $MarginContainer/VBoxContainer/ButtonsContainer/ExitBtn
 
-@onready var gold_label = $MarginContainer/VBoxContainer/HeaderContainer/GoldLabel
+@onready var gold_label = $MarginContainer/VBoxContainer/HeaderContainer/HeaderVBox/GoldLabel
 @onready var shop_modal = $ShopModal
 @onready var how_to_play_modal = $HowToPlayModal
 @onready var close_how_to_play_btn = $HowToPlayModal/Panel/VBoxContainer/CloseBtn
@@ -29,7 +29,20 @@ extends Control
 @onready var achievements_list = $AchievementsModal/Panel/VBoxContainer/ScrollContainer/AchsList
 @onready var close_achievements_btn = $AchievementsModal/Panel/VBoxContainer/CloseBtn
 
+var inset_style: StyleBoxTexture
+
 func _ready():
+	inset_style = StyleBoxTexture.new()
+	inset_style.texture = load("res://assets/ui/panel_inset_well.png")
+	inset_style.texture_margin_left = 12
+	inset_style.texture_margin_top = 12
+	inset_style.texture_margin_right = 12
+	inset_style.texture_margin_bottom = 12
+	inset_style.content_margin_left = 10
+	inset_style.content_margin_top = 10
+	inset_style.content_margin_right = 10
+	inset_style.content_margin_bottom = 10
+
 	new_game_btn.pressed.connect(_on_new_game_pressed)
 	continue_btn.pressed.connect(_on_continue_pressed)
 	leaderboard_btn.pressed.connect(_on_leaderboard_pressed)
@@ -56,13 +69,13 @@ func update_ui_state():
 
 	if SaveManager.has_save():
 		continue_btn.disabled = false
-		continue_btn.text = "CONTINUE GAME"
+		continue_btn.text = "  CONTINUE GAME"
 	else:
 		continue_btn.disabled = true
-		continue_btn.text = "CONTINUE (No Saved Game)"
+		continue_btn.text = "  CONTINUE (No Saved Game)"
 
 	shop_btn.disabled = false
-	shop_btn.text = "INSIGHT SHOP"
+	shop_btn.text = "  INSIGHT SHOP"
 
 func _on_new_game_pressed():
 	name_input.text = SaveManager.current_save_data.get("player_name", "Hibernatus-09")
@@ -96,6 +109,7 @@ func _on_leaderboard_pressed():
 		var rank = 1
 		for s in scores:
 			var panel = PanelContainer.new()
+			panel.add_theme_stylebox_override("panel", inset_style)
 			var hbox = HBoxContainer.new()
 
 			var rank_lbl = Label.new()
@@ -126,6 +140,7 @@ func _on_achievements_pressed():
 		var is_unlocked = ach_id in unlocked
 
 		var panel = PanelContainer.new()
+		panel.add_theme_stylebox_override("panel", inset_style)
 		var vbox = VBoxContainer.new()
 
 		var title = Label.new()

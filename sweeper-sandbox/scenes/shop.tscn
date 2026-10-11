@@ -1,6 +1,23 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/shop.gd" id="1_shop"]
+[ext_resource type="Texture2D" path="res://assets/ui/panel_chassis.png" id="2_chassis"]
+[ext_resource type="Texture2D" path="res://assets/ui/button_red.png" id="3_btn_red"]
+[ext_resource type="Texture2D" path="res://assets/ui/icon_close.png" id="4_icon_close"]
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_chassis"]
+texture = ExtResource("2_chassis")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+
+[sub_resource type="StyleBoxTexture" id="StyleBoxTexture_btn_red"]
+texture = ExtResource("3_btn_red")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
 
 [node name="Shop" type="Control"]
 layout_mode = 3
@@ -33,6 +50,7 @@ offset_right = 165.0
 offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxTexture_chassis")
 
 [node name="VBoxContainer" type="VBoxContainer" parent="Panel"]
 layout_mode = 1
@@ -53,13 +71,14 @@ theme_override_constants/separation = 2
 
 [node name="Title" type="Label" parent="Panel/VBoxContainer/Header"]
 layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_font_sizes/font_size = 20
 text = "THE SHOP"
 horizontal_alignment = 1
 
 [node name="GoldLabel" type="Label" parent="Panel/VBoxContainer/Header"]
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_color = Color(1, 0.88, 0.25, 1)
 theme_override_font_sizes/font_size = 14
 text = "💰 Gold Balance: 100"
 horizontal_alignment = 1
@@ -79,5 +98,10 @@ theme_override_constants/separation = 10
 [node name="CloseBtn" type="Button" parent="Panel/VBoxContainer"]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
-theme_override_font_sizes/font_size = 16
+theme_override_colors/font_color = Color(0.95, 0.95, 0.95, 1)
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxTexture_btn_red")
+theme_override_styles/pressed = SubResource("StyleBoxTexture_btn_red")
 text = "CLOSE SHOP"
+icon = ExtResource("4_icon_close")
+expand_icon = true

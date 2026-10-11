@@ -6,7 +6,37 @@ signal shop_closed()
 @onready var items_container = $Panel/VBoxContainer/ScrollContainer/ItemsContainer
 @onready var close_btn = $Panel/VBoxContainer/CloseBtn
 
+var inset_style: StyleBoxTexture
+var btn_orange_style: StyleBoxTexture
+var btn_orange_pressed: StyleBoxTexture
+
 func _ready():
+	inset_style = StyleBoxTexture.new()
+	inset_style.texture = load("res://assets/ui/panel_inset_well.png")
+	inset_style.texture_margin_left = 12
+	inset_style.texture_margin_top = 12
+	inset_style.texture_margin_right = 12
+	inset_style.texture_margin_bottom = 12
+	inset_style.content_margin_left = 10
+	inset_style.content_margin_top = 10
+	inset_style.content_margin_right = 10
+	inset_style.content_margin_bottom = 10
+
+	btn_orange_style = StyleBoxTexture.new()
+	btn_orange_style.texture = load("res://assets/ui/button_orange.png")
+	btn_orange_style.texture_margin_left = 10
+	btn_orange_style.texture_margin_top = 10
+	btn_orange_style.texture_margin_right = 10
+	btn_orange_style.texture_margin_bottom = 10
+
+	btn_orange_pressed = StyleBoxTexture.new()
+	btn_orange_pressed.texture = load("res://assets/ui/button_orange.png")
+	btn_orange_pressed.texture_margin_left = 10
+	btn_orange_pressed.texture_margin_top = 10
+	btn_orange_pressed.texture_margin_right = 10
+	btn_orange_pressed.texture_margin_bottom = 10
+	btn_orange_pressed.modulate_color = Color(0.8, 0.8, 0.8)
+
 	close_btn.pressed.connect(_on_close_pressed)
 	update_shop_ui()
 
@@ -30,6 +60,8 @@ func update_shop_ui():
 		var is_locked = item.get("locked", false)
 
 		var card_panel = PanelContainer.new()
+		card_panel.add_theme_stylebox_override("panel", inset_style)
+
 		var vbox = VBoxContainer.new()
 		vbox.add_theme_constant_override("separation", 4)
 
@@ -48,6 +80,9 @@ func update_shop_ui():
 
 		var buy_btn = Button.new()
 		buy_btn.custom_minimum_size = Vector2(0, 36)
+		buy_btn.add_theme_stylebox_override("normal", btn_orange_style)
+		buy_btn.add_theme_stylebox_override("pressed", btn_orange_pressed)
+		buy_btn.add_theme_color_override("font_color", Color(0.12, 0.08, 0.04))
 
 		if is_locked:
 			buy_btn.disabled = true
@@ -63,7 +98,7 @@ func update_shop_ui():
 					buy_btn.text = "EQUIPPED (Active)"
 			elif gold < price:
 				buy_btn.disabled = true
-				buy_btn.text = "BUY (" + str(price) + " Gold) - Need More Gold"
+				buy_btn.text = "BUY (" + str(price) + " Gold) - Need Gold"
 			else:
 				buy_btn.disabled = false
 				buy_btn.text = "BUY & EQUIP (" + str(price) + " Gold)"
@@ -79,7 +114,7 @@ func update_shop_ui():
 				buy_btn.text = "PURCHASED (In Inventory)"
 			elif gold < price:
 				buy_btn.disabled = true
-				buy_btn.text = "BUY (" + str(price) + " Gold) - Need More Gold"
+				buy_btn.text = "BUY (" + str(price) + " Gold) - Need Gold"
 			else:
 				buy_btn.disabled = false
 				buy_btn.text = "BUY TO INVENTORY (" + str(price) + " Gold)"

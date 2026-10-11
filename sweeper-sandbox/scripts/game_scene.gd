@@ -262,7 +262,6 @@ func _on_decision_committed(_direction: String, choice_data: Dictionary):
 	top_panel.clear_highlights()
 
 	if is_in_doom_history:
-		# Player finished reading multi-slide bad end epilogue cards!
 		is_in_doom_history = false
 		show_final_game_over_popup(pending_game_over_result)
 		return
@@ -278,7 +277,6 @@ func _on_decision_committed(_direction: String, choice_data: Dictionary):
 
 	show_points_popup(pts_earned)
 
-	# Check time survived achievements
 	SaveManager.check_time_achievements(hours_survived)
 
 	SaveManager.consume_modifier_charge()
@@ -318,7 +316,6 @@ func start_doom_history_sequence(result: Dictionary):
 	is_in_doom_history = true
 	pending_game_over_result = result
 
-	# Unlock achievement if losing with insight active
 	var mod = SaveManager.current_save_data.get("active_modifier", "")
 	if mod != "":
 		SaveManager.unlock_achievement("lost_with_insight")
@@ -413,6 +410,24 @@ func update_equipment_modal_ui():
 	var inv = SaveManager.current_save_data.get("inventory", [])
 	var active_prots = SaveManager.current_save_data.get("active_protections", [])
 
+	var inset_style = StyleBoxTexture.new()
+	inset_style.texture = load("res://assets/ui/panel_inset_well.png")
+	inset_style.texture_margin_left = 12
+	inset_style.texture_margin_top = 12
+	inset_style.texture_margin_right = 12
+	inset_style.texture_margin_bottom = 12
+	inset_style.content_margin_left = 10
+	inset_style.content_margin_top = 10
+	inset_style.content_margin_right = 10
+	inset_style.content_margin_bottom = 10
+
+	var btn_orange_style = StyleBoxTexture.new()
+	btn_orange_style.texture = load("res://assets/ui/button_orange.png")
+	btn_orange_style.texture_margin_left = 10
+	btn_orange_style.texture_margin_top = 10
+	btn_orange_style.texture_margin_right = 10
+	btn_orange_style.texture_margin_bottom = 10
+
 	if inv.is_empty():
 		var lbl = Label.new()
 		lbl.text = "No bought protections in inventory. Visit the Shop to purchase shields!"
@@ -432,6 +447,7 @@ func update_equipment_modal_ui():
 			continue
 
 		var card_panel = PanelContainer.new()
+		card_panel.add_theme_stylebox_override("panel", inset_style)
 		var vbox = VBoxContainer.new()
 
 		var name_lbl = Label.new()
@@ -448,6 +464,8 @@ func update_equipment_modal_ui():
 
 		var equip_btn = Button.new()
 		equip_btn.custom_minimum_size = Vector2(0, 36)
+		equip_btn.add_theme_stylebox_override("normal", btn_orange_style)
+		equip_btn.add_theme_color_override("font_color", Color(0.12, 0.08, 0.04))
 
 		if is_equipped:
 			equip_btn.disabled = true
