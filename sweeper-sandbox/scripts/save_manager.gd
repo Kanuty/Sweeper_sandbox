@@ -10,12 +10,12 @@ var current_save_data = {
 	"used_block_ids": [],
 	"active_block_id": "",
 	"active_card_index": 0,
-	"gold_coins": 100, # Persistent Gold currency
-	"inventory": [], # Array of purchased item IDs: ["prot_small_people_min", "item_exact_insight", ...]
-	"active_protections": [], # Array of dicts: [{"id": "...", "type": "small"/"big", "indicator": 0, "mode": "min"/"max"/"both"}]
-	"active_modifier": "", # Insight modifier
+	"gold_coins": 0, # Persistent Gold balance starting at 0
+	"inventory": [],
+	"active_protections": [],
+	"active_modifier": "",
 	"modifier_block_charges": 0,
-	"install_cooldown": 0 # Decisions remaining until next protection can be installed
+	"install_cooldown": 0
 }
 
 func _ready():
@@ -45,7 +45,7 @@ func load_game():
 			if typeof(data) == TYPE_DICTIONARY:
 				current_save_data = data
 				if not current_save_data.has("gold_coins"):
-					current_save_data["gold_coins"] = 100
+					current_save_data["gold_coins"] = 0
 				if not current_save_data.has("survival_points"):
 					current_save_data["survival_points"] = 0
 				if not current_save_data.has("inventory"):
@@ -56,10 +56,7 @@ func load_game():
 					current_save_data["install_cooldown"] = 0
 
 func start_new_game(default_indicators = [50.0, 50.0, 50.0, 50.0]):
-	var current_gold = current_save_data.get("gold_coins", 100)
-	var inv = current_save_data.get("inventory", []).duplicate()
-	var active_mod = current_save_data.get("active_modifier", "")
-	var charges = current_save_data.get("modifier_block_charges", 0)
+	var current_gold = current_save_data.get("gold_coins", 0)
 
 	current_save_data = {
 		"has_active_game": true,
@@ -70,10 +67,10 @@ func start_new_game(default_indicators = [50.0, 50.0, 50.0, 50.0]):
 		"active_block_id": "",
 		"active_card_index": 0,
 		"gold_coins": current_gold,
-		"inventory": inv,
-		"active_protections": [],
-		"active_modifier": active_mod,
-		"modifier_block_charges": charges,
+		"inventory": [], # Clear unused inventory on new run
+		"active_protections": [], # Clear active protections on new run
+		"active_modifier": "", # Clear active insight modifier on new run
+		"modifier_block_charges": 0,
 		"install_cooldown": 0
 	}
 	save_game()
@@ -81,7 +78,7 @@ func start_new_game(default_indicators = [50.0, 50.0, 50.0, 50.0]):
 func add_gold(amount: int):
 	var gold = current_save_data.get("gold_coins", 0)
 	gold += amount
-	current_save_data["gold_coins"] = gold
+	current_save_data["gold_coins"] = max(0, gold)
 	save_game()
 
 func add_survival_points(pts: int):
@@ -91,10 +88,13 @@ func add_survival_points(pts: int):
 	save_game()
 
 func calculate_non_linear_gold(pts: int, hours: int) -> int:
-	var days = hours / 24
-	var multiplier = 1.0 + (days * 0.15) + ((days * days) * 0.05)
-	var gold_reward = int(round(pts * multiplier)) + (days * 15)
-	return max(15, gold_reward)
+	var days = hours / 24.0
+	# Rebalanced curve: surviving ~15 days gives ~35-45 Gold Coins
+	# Slight linear-progressive growth: 1 gold per 10 survival points * (1.0 + days * 0.02)
+	var multiplier = 1.0 + (days * 0.02)
+	var base_gold = (pts / 10.0) * multiplier
+	var total_gold = int(round(base_gold))
+	return max(0, total_gold)
 
 func set_modifier(mod_type: String, charges: int = 0):
 	current_save_data["active_modifier"] = mod_type
@@ -165,11 +165,9 @@ func remove_protection_and_set_cooldown(index: int, cooldown_decisions: int):
 		save_game()
 
 func clear_save():
-	var gold = current_save_data.get("gold_coins", 100)
-	var inv = current_save_data.get("inventory", [])
-	var active_mod = current_save_data.get("active_modifier", "")
-	var charges = current_save_data.get("modifier_block_charges", 0)
+	var gold = current_save_data.get("gold_coins", 0)
 
+	# Insights & protections reset after game is finished
 	current_save_data = {
 		"has_active_game": false,
 		"hours_survived": 0,
@@ -179,10 +177,10 @@ func clear_save():
 		"active_block_id": "",
 		"active_card_index": 0,
 		"gold_coins": gold,
-		"inventory": inv,
+		"inventory": [],
 		"active_protections": [],
-		"active_modifier": active_mod,
-		"modifier_block_charges": charges,
+		"active_modifier": "",
+		"modifier_block_charges": 0,
 		"install_cooldown": 0
 	}
 	if FileAccess.file_exists(SAVE_PATH):

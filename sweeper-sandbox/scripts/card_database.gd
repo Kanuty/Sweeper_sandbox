@@ -8,23 +8,23 @@ const INDICATORS = {
 	3: {"name": "Tech", "icon_symbol": "⚡"}
 }
 
-# Shop items list
+# Rebalanced Shop items list
 var shop_items = [
 	# Insights
 	{
-		"id": "item_exact_insight",
-		"name": "Exact Insight (Permanent)",
-		"description": "Shows EXACT delta value changes for every choice.",
-		"price": 150,
-		"type": "exact_insight",
-		"charges": 0,
+		"id": "item_timed_small_insight",
+		"name": "Timed Small Insight (3 Blocks)",
+		"description": "Shows value change ranges for the next 3 Decision Blocks.",
+		"price": 30, # Achievable around ~12-15 days survival
+		"type": "timed_small_insight",
+		"charges": 3,
 		"category": "insight"
 	},
 	{
 		"id": "item_small_insight",
 		"name": "Small Insight (Permanent)",
 		"description": "Shows value change ranges for every choice.",
-		"price": 80,
+		"price": 60,
 		"type": "small_insight",
 		"charges": 0,
 		"category": "insight"
@@ -39,20 +39,20 @@ var shop_items = [
 		"category": "insight"
 	},
 	{
-		"id": "item_timed_small_insight",
-		"name": "Timed Small Insight (3 Blocks)",
-		"description": "Shows value change ranges for the next 3 Decision Blocks.",
-		"price": 30,
-		"type": "timed_small_insight",
-		"charges": 3,
+		"id": "item_exact_insight",
+		"name": "Exact Insight (Permanent)",
+		"description": "Shows EXACT delta value changes for every choice.",
+		"price": 100,
+		"type": "exact_insight",
+		"charges": 0,
 		"category": "insight"
 	},
-	# Protections (Cheaper Small = Min or Max, Expensive Big = Both Min & Max)
+	# Protections
 	{
 		"id": "prot_small_people_min",
 		"name": "Small Protection: People (Min 0)",
 		"description": "Prevents Game Over if People drops to 0. Installs in 5 decisions.",
-		"price": 60,
+		"price": 40, # Achievable around ~15 days survival
 		"type": "protection",
 		"prot_type": "small",
 		"indicator": 0,
@@ -64,7 +64,7 @@ var shop_items = [
 		"id": "prot_small_treasury_min",
 		"name": "Small Protection: Treasury (Min 0)",
 		"description": "Prevents Game Over if Treasury drops to 0. Installs in 5 decisions.",
-		"price": 60,
+		"price": 40,
 		"type": "protection",
 		"prot_type": "small",
 		"indicator": 1,
@@ -76,7 +76,7 @@ var shop_items = [
 		"id": "prot_big_people",
 		"name": "Big Protection: People (Min & Max)",
 		"description": "Protects People from BOTH 0 depletion and 100 overflow. Installs in 7 decisions.",
-		"price": 120,
+		"price": 85,
 		"type": "protection",
 		"prot_type": "big",
 		"indicator": 0,
@@ -88,7 +88,7 @@ var shop_items = [
 		"id": "prot_big_treasury",
 		"name": "Big Protection: Treasury (Min & Max)",
 		"description": "Protects Treasury from BOTH 0 depletion and 100 overflow. Installs in 7 decisions.",
-		"price": 120,
+		"price": 85,
 		"type": "protection",
 		"prot_type": "big",
 		"indicator": 1,
@@ -100,10 +100,10 @@ var shop_items = [
 		"id": "prot_super_omni",
 		"name": "Super Protection (Omni Shield)",
 		"description": "Covers ALL indicators from high/low extremes simultaneously.",
-		"price": 500,
+		"price": 300,
 		"type": "protection",
 		"prot_type": "super",
-		"locked": true, # Currently unaccessible
+		"locked": true,
 		"category": "protection"
 	}
 ]
@@ -113,7 +113,7 @@ var decision_blocks = [
 	{
 		"id": "block_01",
 		"time_cost_hours": 18,
-		"reward_points": 25,
+		"reward_points": 15,
 		"story_cards": [
 			{
 				"title": "SITUATION REPORT: Solar Grid Proposal",
@@ -151,7 +151,7 @@ var decision_blocks = [
 	{
 		"id": "block_02",
 		"time_cost_hours": 48,
-		"reward_points": 60, # Higher premium for 2-day event
+		"reward_points": 35,
 		"story_cards": [
 			{
 				"title": "ECONOMIC CRISIS: Fiscal Year Review",
@@ -189,7 +189,7 @@ var decision_blocks = [
 	{
 		"id": "block_03",
 		"time_cost_hours": 72,
-		"reward_points": 100, # Major 3-day special event premium
+		"reward_points": 50,
 		"story_cards": [
 			{
 				"title": "LAND CONFLICT: Industrial Expansion",
@@ -222,7 +222,7 @@ var decision_blocks = [
 	{
 		"id": "block_04",
 		"time_cost_hours": 12,
-		"reward_points": 20,
+		"reward_points": 10,
 		"story_cards": [
 			{
 				"title": "SECURITY ALERT: Crime Surge",
@@ -255,7 +255,7 @@ var decision_blocks = [
 	{
 		"id": "block_05",
 		"time_cost_hours": 36,
-		"reward_points": 50,
+		"reward_points": 25,
 		"story_cards": [
 			{
 				"title": "AGRICULTURE CRISIS: Drought Warning",
@@ -288,7 +288,7 @@ var decision_blocks = [
 	{
 		"id": "block_06",
 		"time_cost_hours": 24,
-		"reward_points": 35,
+		"reward_points": 20,
 		"story_cards": [
 			{
 				"title": "CYBER INCIDENT: Ransomware Attack",
