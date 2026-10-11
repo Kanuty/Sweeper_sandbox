@@ -50,7 +50,7 @@ func init_game():
 	var save = SaveManager.current_save_data
 	hours_survived = save.get("hours_survived", 0)
 	survival_points = save.get("survival_points", 0)
-	var indicators = save.get("indicators", [50.0, 50.0, 50.0, 50.0])
+	var indicators = save.get("indicators", SaveManager.DEFAULT_INDICATORS)
 	var active_block_id = save.get("active_block_id", "")
 	var active_card_idx = save.get("active_card_index", 0)
 
@@ -103,7 +103,7 @@ func _on_drag_ended():
 func _on_decision_committed(_direction: String, choice_data: Dictionary):
 	top_panel.clear_highlights()
 
-	var deltas = choice_data.get("deltas", [0, 0, 0, 0])
+	var deltas = choice_data.get("deltas", [0, 0, 0, 0, 0])
 	var result = top_panel.apply_deltas(deltas)
 
 	var time_cost = current_block.get("time_cost_hours", 24)
@@ -119,8 +119,12 @@ func _on_decision_committed(_direction: String, choice_data: Dictionary):
 	update_time_and_points_label()
 
 	var used = SaveManager.current_save_data.get("used_block_ids", [])
-	if not current_block.get("id", "") in used:
-		used.append(current_block.get("id", ""))
+	var block_id = current_block.get("id", "")
+	var is_generic = current_block.get("is_generic", false)
+
+	# Only add non-generic blocks to used_block_ids so non-generic blocks do not re-appear!
+	if not is_generic and not block_id in used:
+		used.append(block_id)
 
 	SaveManager.current_save_data["hours_survived"] = hours_survived
 	SaveManager.current_save_data["indicators"] = top_panel.values.duplicate()
@@ -152,17 +156,16 @@ func handle_game_over(result: Dictionary):
 
 	var reason_text = ""
 	if is_max:
-		reason_text = "OVERFLOW! Your " + ind_name + " reached maximum capacity (100)!"
+		reason_text = "OVERFLOW! Your " + ind_name + " reached lethal capacity (100)!"
 	else:
 		reason_text = "DEPLETED! Your " + ind_name + " dropped to zero (0)!"
 
-	# Non-linear gold calculation from survival points & hours
 	var gold_earned = SaveManager.calculate_non_linear_gold(survival_points, hours_survived)
 	SaveManager.add_gold(gold_earned)
 
 	game_over_reason.text = reason_text
 	game_over_stats.text = "Survived: " + SaveManager.format_time_survived(hours_survived) + " (" + str(survival_points) + " Pts)"
-	gold_earned_label.text = "💰 Converted to +" + str(gold_earned) + " Gold Coins!"
+	gold_earned_label.text = "💰 Converted to +" + str(gold_earned) + " Scrap Gold!"
 
 	SaveManager.clear_save()
 	game_over_modal.visible = true

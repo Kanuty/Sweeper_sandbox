@@ -6,47 +6,55 @@ signal indicator_failed(indicator_index, value, is_max)
 	$MarginContainer/HBoxContainer/Indicator0/VBoxContainer/ProgressBar,
 	$MarginContainer/HBoxContainer/Indicator1/VBoxContainer/ProgressBar,
 	$MarginContainer/HBoxContainer/Indicator2/VBoxContainer/ProgressBar,
-	$MarginContainer/HBoxContainer/Indicator3/VBoxContainer/ProgressBar
+	$MarginContainer/HBoxContainer/Indicator3/VBoxContainer/ProgressBar,
+	$MarginContainer/HBoxContainer/Indicator4/VBoxContainer/ProgressBar
 ]
 
 @onready var indicator_labels = [
 	$MarginContainer/HBoxContainer/Indicator0/VBoxContainer/ValueLabel,
 	$MarginContainer/HBoxContainer/Indicator1/VBoxContainer/ValueLabel,
 	$MarginContainer/HBoxContainer/Indicator2/VBoxContainer/ValueLabel,
-	$MarginContainer/HBoxContainer/Indicator3/VBoxContainer/ValueLabel
+	$MarginContainer/HBoxContainer/Indicator3/VBoxContainer/ValueLabel,
+	$MarginContainer/HBoxContainer/Indicator4/VBoxContainer/ValueLabel
 ]
 
 @onready var affect_dots = [
 	$MarginContainer/HBoxContainer/Indicator0/VBoxContainer/AffectDot,
 	$MarginContainer/HBoxContainer/Indicator1/VBoxContainer/AffectDot,
 	$MarginContainer/HBoxContainer/Indicator2/VBoxContainer/AffectDot,
-	$MarginContainer/HBoxContainer/Indicator3/VBoxContainer/AffectDot
+	$MarginContainer/HBoxContainer/Indicator3/VBoxContainer/AffectDot,
+	$MarginContainer/HBoxContainer/Indicator4/VBoxContainer/AffectDot
 ]
 
 @onready var indicator_panels = [
 	$MarginContainer/HBoxContainer/Indicator0,
 	$MarginContainer/HBoxContainer/Indicator1,
 	$MarginContainer/HBoxContainer/Indicator2,
-	$MarginContainer/HBoxContainer/Indicator3
+	$MarginContainer/HBoxContainer/Indicator3,
+	$MarginContainer/HBoxContainer/Indicator4
 ]
 
 @onready var shield_labels = [
 	$MarginContainer/HBoxContainer/Indicator0/VBoxContainer/ShieldLabel,
 	$MarginContainer/HBoxContainer/Indicator1/VBoxContainer/ShieldLabel,
 	$MarginContainer/HBoxContainer/Indicator2/VBoxContainer/ShieldLabel,
-	$MarginContainer/HBoxContainer/Indicator3/VBoxContainer/ShieldLabel
+	$MarginContainer/HBoxContainer/Indicator3/VBoxContainer/ShieldLabel,
+	$MarginContainer/HBoxContainer/Indicator4/VBoxContainer/ShieldLabel
 ]
 
-var values = [50.0, 50.0, 50.0, 50.0]
+var values = [50.0, 50.0, 50.0, 50.0, 0.0]
 
 func set_indicators(new_values: Array):
 	values = new_values.duplicate()
+	if values.size() < 5:
+		while values.size() < 5:
+			values.append(0.0 if values.size() == 4 else 50.0)
 	update_display_immediate()
 	update_protection_shields()
 
 func update_protection_shields():
 	var active_prots = SaveManager.current_save_data.get("active_protections", [])
-	for i in range(4):
+	for i in range(5):
 		if i < shield_labels.size():
 			shield_labels[i].visible = false
 			shield_labels[i].text = ""
@@ -63,14 +71,14 @@ func update_protection_shields():
 			shield_labels[ind].visible = true
 
 func update_display_immediate():
-	for i in range(4):
+	for i in range(5):
 		if i < indicator_bars.size() and i < values.size():
 			var val = clamp(values[i], 0.0, 100.0)
 			indicator_bars[i].value = val
 			indicator_labels[i].text = str(int(round(val)))
 
 func highlight_affected(affected_indices: Array, deltas: Array = [], insight_mode: String = ""):
-	for i in range(4):
+	for i in range(5):
 		if i < affect_dots.size():
 			if i in affected_indices:
 				var dot = affect_dots[i]
@@ -112,11 +120,15 @@ func apply_deltas(deltas: Array) -> Dictionary:
 
 	var active_prots = SaveManager.current_save_data.get("active_protections", []).duplicate()
 
-	for i in range(min(4, deltas.size())):
+	for i in range(min(5, deltas.size())):
 		var old_val = values[i]
 		var delta = deltas[i]
 		var raw_new_val = old_val + delta
-		var is_min_fail = (raw_new_val <= 0.0)
+
+		var ind_info = CardDatabase.INDICATORS.get(i, {})
+		var is_hazardous = ind_info.get("is_hazardous", false)
+
+		var is_min_fail = (not is_hazardous) and (raw_new_val <= 0.0)
 		var is_max_fail = (raw_new_val >= 100.0)
 
 		var protected = false
@@ -130,7 +142,7 @@ func apply_deltas(deltas: Array) -> Dictionary:
 						protected = true
 						result["protection_triggered"] = true
 
-						# Clamp safely to 15 or 85 instead of losing
+						# Clamp safely
 						raw_new_val = 15.0 if is_min_fail else 85.0
 
 						# Remove shield and trigger install cooldown (5 for small, 7 for big)
@@ -161,7 +173,7 @@ func apply_deltas(deltas: Array) -> Dictionary:
 		lbl.text = str(int(round(new_val)))
 
 		if not protected:
-			if new_val <= 0.0:
+			if (not is_hazardous) and new_val <= 0.0:
 				result["game_over"] = true
 				result["failed_index"] = i
 				result["value"] = new_val

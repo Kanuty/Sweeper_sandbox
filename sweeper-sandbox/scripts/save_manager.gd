@@ -2,18 +2,20 @@ extends Node
 
 const SAVE_PATH = "user://savegame.json"
 
+const DEFAULT_INDICATORS = [50.0, 50.0, 50.0, 50.0, 0.0]
+
 var current_save_data = {
 	"has_active_game": false,
 	"hours_survived": 0,
 	"survival_points": 0,
-	"indicators": [50.0, 50.0, 50.0, 50.0],
+	"indicators": [50.0, 50.0, 50.0, 50.0, 0.0],
 	"used_block_ids": [],
 	"active_block_id": "",
 	"active_card_index": 0,
-	"gold_coins": 0, # Persistent Gold balance starting at 0
-	"inventory": [],
-	"active_protections": [],
-	"active_modifier": "",
+	"gold_coins": 100, # Persistent Gold currency
+	"inventory": [], # Array of purchased item IDs
+	"active_protections": [], # Array of dicts
+	"active_modifier": "", # Insight modifier
 	"modifier_block_charges": 0,
 	"install_cooldown": 0
 }
@@ -54,9 +56,17 @@ func load_game():
 					current_save_data["active_protections"] = []
 				if not current_save_data.has("install_cooldown"):
 					current_save_data["install_cooldown"] = 0
+				if current_save_data.get("indicators", []).size() < 5:
+					var inds = current_save_data.get("indicators", [50.0, 50.0, 50.0, 50.0])
+					while inds.size() < 5:
+						inds.append(0.0)
+					current_save_data["indicators"] = inds
 
-func start_new_game(default_indicators = [50.0, 50.0, 50.0, 50.0]):
-	var current_gold = current_save_data.get("gold_coins", 0)
+func start_new_game(default_indicators = DEFAULT_INDICATORS):
+	var current_gold = current_save_data.get("gold_coins", 100)
+	var inv = current_save_data.get("inventory", []).duplicate()
+	var active_mod = current_save_data.get("active_modifier", "")
+	var charges = current_save_data.get("modifier_block_charges", 0)
 
 	current_save_data = {
 		"has_active_game": true,
@@ -172,7 +182,7 @@ func clear_save():
 		"has_active_game": false,
 		"hours_survived": 0,
 		"survival_points": 0,
-		"indicators": [50.0, 50.0, 50.0, 50.0],
+		"indicators": DEFAULT_INDICATORS.duplicate(),
 		"used_block_ids": [],
 		"active_block_id": "",
 		"active_card_index": 0,

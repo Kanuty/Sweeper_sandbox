@@ -16,7 +16,7 @@ func update_shop_ui():
 	var inv = SaveManager.current_save_data.get("inventory", [])
 	var charges = SaveManager.current_save_data.get("modifier_block_charges", 0)
 
-	gold_label.text = "💰 Gold Balance: " + str(gold)
+	gold_label.text = "💰 Scrap Gold: " + str(gold)
 
 	for child in items_container.get_children():
 		child.queue_free()
