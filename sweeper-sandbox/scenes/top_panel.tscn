@@ -26,13 +26,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme_override_constants/margin_left = 10
-theme_override_constants/margin_top = 10
-theme_override_constants/margin_right = 10
-theme_override_constants/margin_bottom = 10
+theme_override_constants/margin_left = 6
+theme_override_constants/margin_top = 6
+theme_override_constants/margin_right = 6
+theme_override_constants/margin_bottom = 6
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
 layout_mode = 2
+theme_override_constants/separation = 4
 alignment = 1
 
 [node name="Indicator0" type="PanelContainer" parent="MarginContainer/HBoxContainer"]
@@ -41,37 +42,46 @@ size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Indicator0"]
 layout_mode = 2
+theme_override_constants/separation = 1
 alignment = 1
+
+[node name="ShieldLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator0/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 9
+text = "🛡️ MIN"
+horizontal_alignment = 1
 
 [node name="AffectDot" type="Label" parent="MarginContainer/HBoxContainer/Indicator0/VBoxContainer"]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 12
-text = "▲ AFFECTED ▲"
+theme_override_font_sizes/font_size = 10
+text = "▲ AFFECTED"
 horizontal_alignment = 1
 
 [node name="IconLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator0/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
 text = "👥"
 horizontal_alignment = 1
 
 [node name="NameLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator0/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "People"
 horizontal_alignment = 1
 
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/HBoxContainer/Indicator0/VBoxContainer"]
-custom_minimum_size = Vector2(0, 12)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 value = 50.0
 show_percentage = false
 
 [node name="ValueLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator0/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "50"
 horizontal_alignment = 1
 
@@ -81,37 +91,46 @@ size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Indicator1"]
 layout_mode = 2
+theme_override_constants/separation = 1
 alignment = 1
+
+[node name="ShieldLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 9
+text = "🛡️ MIN"
+horizontal_alignment = 1
 
 [node name="AffectDot" type="Label" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 12
-text = "▲ AFFECTED ▲"
+theme_override_font_sizes/font_size = 10
+text = "▲ AFFECTED"
 horizontal_alignment = 1
 
 [node name="IconLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
 text = "💰"
 horizontal_alignment = 1
 
 [node name="NameLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "Treasury"
 horizontal_alignment = 1
 
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
-custom_minimum_size = Vector2(0, 12)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 value = 50.0
 show_percentage = false
 
 [node name="ValueLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator1/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "50"
 horizontal_alignment = 1
 
@@ -121,37 +140,46 @@ size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Indicator2"]
 layout_mode = 2
+theme_override_constants/separation = 1
 alignment = 1
+
+[node name="ShieldLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator2/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 9
+text = "🛡️ MIN"
+horizontal_alignment = 1
 
 [node name="AffectDot" type="Label" parent="MarginContainer/HBoxContainer/Indicator2/VBoxContainer"]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 12
-text = "▲ AFFECTED ▲"
+theme_override_font_sizes/font_size = 10
+text = "▲ AFFECTED"
 horizontal_alignment = 1
 
 [node name="IconLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator2/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
 text = "🌿"
 horizontal_alignment = 1
 
 [node name="NameLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator2/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "Environment"
 horizontal_alignment = 1
 
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/HBoxContainer/Indicator2/VBoxContainer"]
-custom_minimum_size = Vector2(0, 12)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 value = 50.0
 show_percentage = false
 
 [node name="ValueLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator2/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "50"
 horizontal_alignment = 1
 
@@ -161,36 +189,45 @@ size_flags_horizontal = 3
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/HBoxContainer/Indicator3"]
 layout_mode = 2
+theme_override_constants/separation = 1
 alignment = 1
+
+[node name="ShieldLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator3/VBoxContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.9, 1, 1)
+theme_override_font_sizes/font_size = 9
+text = "🛡️ MIN"
+horizontal_alignment = 1
 
 [node name="AffectDot" type="Label" parent="MarginContainer/HBoxContainer/Indicator3/VBoxContainer"]
 visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
-theme_override_font_sizes/font_size = 12
-text = "▲ AFFECTED ▲"
+theme_override_font_sizes/font_size = 10
+text = "▲ AFFECTED"
 horizontal_alignment = 1
 
 [node name="IconLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator3/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 16
 text = "⚡"
 horizontal_alignment = 1
 
 [node name="NameLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator3/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "Tech"
 horizontal_alignment = 1
 
 [node name="ProgressBar" type="ProgressBar" parent="MarginContainer/HBoxContainer/Indicator3/VBoxContainer"]
-custom_minimum_size = Vector2(0, 12)
+custom_minimum_size = Vector2(0, 10)
 layout_mode = 2
 value = 50.0
 show_percentage = false
 
 [node name="ValueLabel" type="Label" parent="MarginContainer/HBoxContainer/Indicator3/VBoxContainer"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 11
+theme_override_font_sizes/font_size = 10
 text = "50"
 horizontal_alignment = 1

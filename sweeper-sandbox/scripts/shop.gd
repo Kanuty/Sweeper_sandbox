@@ -13,6 +13,7 @@ func _ready():
 func update_shop_ui():
 	var gold = SaveManager.current_save_data.get("gold_coins", 0)
 	var active_mod = SaveManager.current_save_data.get("active_modifier", "")
+	var inv = SaveManager.current_save_data.get("inventory", [])
 	var charges = SaveManager.current_save_data.get("modifier_block_charges", 0)
 
 	gold_label.text = "💰 Gold Balance: " + str(gold)
@@ -25,54 +26,73 @@ func update_shop_ui():
 		var item_name = item["name"]
 		var desc = item["description"]
 		var price = item["price"]
-		var mod_type = item["type"]
-		var item_charges = item["charges"]
+		var category = item.get("category", "insight")
+		var is_locked = item.get("locked", false)
 
 		var card_panel = PanelContainer.new()
 		var vbox = VBoxContainer.new()
-		vbox.add_theme_constant_override("separation", 5)
+		vbox.add_theme_constant_override("separation", 4)
 
 		var title_lbl = Label.new()
 		title_lbl.text = item_name
-		title_lbl.add_theme_font_size_override("font_size", 16)
-		title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3))
+		title_lbl.add_theme_font_size_override("font_size", 14)
+		title_lbl.add_theme_color_override("font_color", Color(1.0, 0.85, 0.3) if category == "insight" else Color(0.3, 0.9, 1.0))
 		vbox.add_child(title_lbl)
 
 		var desc_lbl = Label.new()
 		desc_lbl.text = desc
 		desc_lbl.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		desc_lbl.add_theme_font_size_override("font_size", 13)
+		desc_lbl.add_theme_font_size_override("font_size", 12)
 		desc_lbl.add_theme_color_override("font_color", Color(0.85, 0.88, 0.92))
 		vbox.add_child(desc_lbl)
 
 		var buy_btn = Button.new()
-		buy_btn.custom_minimum_size = Vector2(0, 40)
+		buy_btn.custom_minimum_size = Vector2(0, 36)
 
-		if active_mod == mod_type and (item_charges == 0 or charges > 0):
+		if is_locked:
 			buy_btn.disabled = true
-			if item_charges > 0:
-				buy_btn.text = "EQUIPPED (" + str(charges) + " Blocks Left)"
+			buy_btn.text = "LOCKED / UNRELEASED"
+		elif category == "insight":
+			var mod_type = item["type"]
+			var item_charges = item["charges"]
+			if active_mod == mod_type and (item_charges == 0 or charges > 0):
+				buy_btn.disabled = true
+				if item_charges > 0:
+					buy_btn.text = "EQUIPPED (" + str(charges) + " Blocks Left)"
+				else:
+					buy_btn.text = "EQUIPPED (Active)"
+			elif gold < price:
+				buy_btn.disabled = true
+				buy_btn.text = "BUY (" + str(price) + " Gold) - Need More Gold"
 			else:
-				buy_btn.text = "EQUIPPED (Active)"
-		elif gold < price:
-			buy_btn.disabled = true
-			buy_btn.text = "BUY (" + str(price) + " Gold) - Need More Gold"
-		else:
-			buy_btn.disabled = false
-			buy_btn.text = "BUY & EQUIP (" + str(price) + " Gold)"
-			buy_btn.pressed.connect(func(): buy_item(item))
+				buy_btn.disabled = false
+				buy_btn.text = "BUY & EQUIP (" + str(price) + " Gold)"
+				buy_btn.pressed.connect(func():
+					if SaveManager.current_save_data.get("gold_coins", 0) >= price:
+						SaveManager.add_gold(-price)
+						SaveManager.set_modifier(mod_type, item_charges)
+						update_shop_ui()
+				)
+		elif category == "protection":
+			if item_id in inv:
+				buy_btn.disabled = true
+				buy_btn.text = "PURCHASED (In Inventory)"
+			elif gold < price:
+				buy_btn.disabled = true
+				buy_btn.text = "BUY (" + str(price) + " Gold) - Need More Gold"
+			else:
+				buy_btn.disabled = false
+				buy_btn.text = "BUY TO INVENTORY (" + str(price) + " Gold)"
+				buy_btn.pressed.connect(func():
+					if SaveManager.current_save_data.get("gold_coins", 0) >= price:
+						SaveManager.add_gold(-price)
+						SaveManager.add_to_inventory(item_id)
+						update_shop_ui()
+				)
 
 		vbox.add_child(buy_btn)
 		card_panel.add_child(vbox)
 		items_container.add_child(card_panel)
-
-func buy_item(item: Dictionary):
-	var price = item["price"]
-	var gold = SaveManager.current_save_data.get("gold_coins", 0)
-	if gold >= price:
-		SaveManager.add_gold(-price)
-		SaveManager.set_modifier(item["type"], item["charges"])
-		update_shop_ui()
 
 func _on_close_pressed():
 	visible = false

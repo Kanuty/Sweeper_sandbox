@@ -22,11 +22,11 @@ CardDatabase="*res://scripts/card_database.gd"
 
 [display]
 
-window/size/viewport_width=540
-window/size/viewport_height=960
+window/size/viewport_width=360
+window/size/viewport_height=740
 window/handheld/orientation=1
 window/stretch/mode="canvas_items"
-window/stretch/aspect="expand"
+window/stretch/aspect="keep"
 
 [input]
 
